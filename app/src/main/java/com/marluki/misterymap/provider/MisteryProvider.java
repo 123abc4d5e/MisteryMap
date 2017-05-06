@@ -7,6 +7,8 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 
+import com.marluki.misterymap.provider.DatuBaseKontratua;
+
 public class MisteryProvider extends ContentProvider {
 
     public static final String TAG = "Provider";
@@ -30,6 +32,7 @@ public class MisteryProvider extends ContentProvider {
     public static final int OBJETOS_ID_SIN_RESOLVER = 105;
     public static final int OBJETOS_ID_COMENTARIOS = 106;
     public static final int OBJETOS_ID_FOTOS = 107;
+    public static final int OBJETOS_ID_PSICOFONIAS = 107;
 
     public static final int OVNIS = 200;
     public static final int OVNIS_ID = 201;
@@ -52,8 +55,48 @@ public class MisteryProvider extends ContentProvider {
     public static final int PSICOFONIAS = 500;
     public static final int PSICOFONIAS_ID = 501;
 
+    public static final int FOTOS = 600;
+    public static final int FOTOS_ID = 601;
+
+    public static final int USUARIOS = 700;
+    public static final int USUARIOS_ID = 701;
+
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "objetos_mapa", OBJETOS_MAPA);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "objetos_mapa/*", OBJETOS_MAPA_ID);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "objetos_mapa/*/ovnis", OBJETOS_ID_OVNIS);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "objetos_mapa/*/fantasmas", OBJETOS_ID_FANTASMAS);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "objetos_mapa/*/historicos", OBJETOS_ID_HISTORICOS);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "objetos_mapa/*/sin_resolver", OBJETOS_ID_SIN_RESOLVER);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "objetos_mapa/*/comentarios", OBJETOS_ID_COMENTARIOS);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "objetos_mapa/*/fotos", OBJETOS_ID_FOTOS);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "objetos_mapa/*/psicofonias", OBJETOS_ID_PSICOFONIAS);
+
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "ovnis", OVNIS);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "ovnis/*", OVNIS_ID);
+
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "fantasmas", FANTASMAS);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "fantasmas/*", FANTASMAS_ID);
+
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "historicos", HISTORICOS);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "historicos/*", HISTORICOS_ID);
+
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "sin_resolver", SIN_RESOLVER);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "sin_resolver/*", SIN_RESOLVER_ID);
+
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "comentarios", COMENTARIOS);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "comentarios/*", COMENTARIOS_ID);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "comentarios/*/comentarios", COMENTARIOS_ID_COMENTARIOS);
+
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "psicofonias", PSICOFONIAS);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "psicofonias/*", PSICOFONIAS_ID);
+
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "fotos", FOTOS);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "fotos/*", FOTOS_ID);
+
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "usuarios", USUARIOS);
+        uriMatcher.addURI(DatuBaseKontratua.AUTHORITY, "usuarios/*", USUARIOS_ID);
     }
 
     @Override

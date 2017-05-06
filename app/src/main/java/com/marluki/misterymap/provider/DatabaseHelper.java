@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
-import android.support.design.widget.TabLayout;
 
 import static com.marluki.misterymap.provider.DatuBaseKontratua.*;
 
@@ -84,11 +83,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
                         "%s TEXT UNIQUE NOT NULL,%s TEXT NOT NULL %s,%s TEXT NOT NULL," +
-                        "%s TEXT NOT NULL %s, %s INTEGER NOT NULL DEFAULT %s," +
+                        "%s TEXT NOT NULL %s, %s TEXT NOT NULL, %s INTEGER NOT NULL DEFAULT %s," +
                         "%s INTEGER NOT NULL DEFAULT 0)",
                 Tablas.PSICOFONIA, BaseColumns._ID, Psicofonias.ID,
                 Psicofonias.OBJETO_ID, referencias.OBJETO_ID,
                 Psicofonias.URL, Psicofonias.USUARIO_ID, referencias.USUARIO_ID,
+                Psicofonias.NOMBRE,
                 Psicofonias.ESTADO, ESTADO_OK, Psicofonias.PENDIENTE_INSERCION));
 
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -100,9 +100,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Tablas.USUARIO, BaseColumns._ID, Usuarios.ID, Usuarios.NOMBRE));
 
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "%s TEXT UNIQUE NOT NULL,%s TEXT NOT NULL %s, %s TEXT NOT NULL, %s TEXT NOT NULL, %s INTEGER NOT NULL DEFAULT %s," +
+                        "%s TEXT UNIQUE NOT NULL,%s TEXT NOT NULL %s, %s TEXT NOT NULL, %s TEXT NOT NULL, %s TEXT NOT NULL %s, %s INTEGER NOT NULL DEFAULT %s," +
                         "%s INTEGER NOT NULL DEFAULT 0)",
                 Tablas.FOTO, BaseColumns._ID, Fotos.ID, Fotos.OBJETO_ID, referencias.OBJETO_ID,
+                Fotos.USUARIO_ID, referencias.USUARIO_ID,
                 Fotos.NOMBRE, Fotos.URL, Fotos.ESTADO, ESTADO_OK, Fotos.PENDIENTE_INSERCION));
     }
 

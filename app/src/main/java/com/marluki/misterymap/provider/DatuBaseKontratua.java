@@ -68,6 +68,7 @@ public class DatuBaseKontratua {
 
     interface ColumnasPsicofonia {
         String ID = "id";
+        String NOMBRE = "nombre";
         String OBJETO_ID = "objetp_id";
         String URL = "url";
         String USUARIO_ID = "usuario_id";
@@ -91,6 +92,7 @@ public class DatuBaseKontratua {
         String NOMBRE = "nombre";
         String URL = "url";
         String OBJETO_ID = "objeto_id";
+        String USUARIO_ID = "usuario_id";
 
         String ESTADO = "estado";
         String PENDIENTE_INSERCION = "pendiente_insercion";
