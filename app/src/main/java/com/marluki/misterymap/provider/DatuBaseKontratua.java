@@ -28,27 +28,23 @@ public class DatuBaseKontratua {
     }
 
     interface ColumnasOvnis {
-        String ID = "id";
         String OBJETO_ID = "objeto_id";
         String DIA = "dia";
         String HORA = "hora";
     }
 
     interface ColumnasFantasmas {
-        String ID = "id";
         String OBJETO_ID = "objeto_id";
         String VISTO = "visto";
         String FAKE = "fake";
     }
 
     interface ColumnasHistorico {
-        String ID = "id";
         String OBJETO_ID = "id";
         String FECHA = "fecha";
     }
 
     interface ColumnasSinResolver {
-        String ID = "id";
         String OBJETO_ID = "objeto_id";
         String FECHA = "fecha";
     }
