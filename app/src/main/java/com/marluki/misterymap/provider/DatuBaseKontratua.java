@@ -5,6 +5,8 @@ import android.content.UriMatcher;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import java.util.UUID;
+
 /**
  * Created by charl on 07/04/2017.
  */
@@ -20,7 +22,7 @@ public class DatuBaseKontratua {
         String LATITUD = "latitud";
         String LONGITUD = "longitud";
         String USUARIO_ID = "usuario_id";
-        String NOMBRE = "nombre";
+        String NOMBRE_OBJETO = "nombre_objeto";
         String DETALLES = "detalles";
 
         String ESTADO = "estado";
@@ -64,7 +66,7 @@ public class DatuBaseKontratua {
 
     interface ColumnasPsicofonia {
         String ID = "id";
-        String NOMBRE = "nombre";
+        String NOMBRE_PSICOFONIA = "nombre_psicofonia";
         String OBJETO_ID = "objetp_id";
         String URL = "url";
         String USUARIO_ID = "usuario_id";
@@ -75,17 +77,22 @@ public class DatuBaseKontratua {
 
     interface ColumnasTipo {
         String ID = "id";
-        String NOMBRE = "nombre";
+        String NOMBRE_TIPO = "nombre_tipo";
     }
 
     interface ColumnasUsuario {
         String ID = "id";
         String NOMBRE = "nombre";
+        String APELLIDO = "apellido";
+        String CORREO = "correo";
+
+        String ESTADO = "estado";
+        String PENDIENTE_INSERCION = "pendiente_insercion";
     }
 
     interface ColumnasFotos {
         String ID = "id";
-        String NOMBRE = "nombre";
+        String NOMBRE_FOTO = "nombre_foto";
         String URL = "url";
         String OBJETO_ID = "objeto_id";
         String USUARIO_ID = "usuario_id";
@@ -97,7 +104,7 @@ public class DatuBaseKontratua {
      * Content provider-aren autoritatea
      */
     public final static String AUTHORITY =
-            "com.marluki.mysterymap";
+            "com.marluki.misterymap";
 
     /**
      * Egoerak
@@ -113,11 +120,11 @@ public class DatuBaseKontratua {
     /**
      * RUTAS "URIS"
      */
-    private static final String RUTA_OBJEKTUAK_MAPA = "objektuak_mapa";
-    private static final String RUTA_OVNIAK = "ovniak";
-    private static final String RUTA_FANTASMAK = "fantasmak";
-    private static final String RUTA_HISTORIKOAK = "historikoak";
-    private static final String RUTA_SIN_RESOLVER = "sin_resolverlos";
+    private static final String RUTA_OBJEKTUAK_MAPA = "objetos_mapa";
+    private static final String RUTA_OVNIAK = "ovnis";
+    private static final String RUTA_FANTASMAK = "fantasmas";
+    private static final String RUTA_HISTORIKOAK = "historicos";
+    private static final String RUTA_SIN_RESOLVER = "sin_resolver";
     private static final String RUTA_COMENTARIOS = "comentarios";
     private static final String RUTA_PSICOFONIAS = "psicofonias";
     private static final String RUTA_TIPOS = "tipos";
@@ -170,28 +177,69 @@ public class DatuBaseKontratua {
      * Objektu_Mapa taula
      */
     public static class Objetos_mapa implements ColumnasObjetos {
+        public static final String PARAMETRO_FILTRO = "filtro";
+        public static final String NOMBRE_OBJETO_FILTRO = "objeto_mapa.nombre";
+        public static final String NOMBRE_USUARIO_FILTRO = "usuario.nombre";
+        public static final String TIPO_FILTRO = "tipo.nombre";
+
         public static final Uri URI_CONTENIDO =
                 URI_BASE.buildUpon().appendPath(RUTA_OBJEKTUAK_MAPA).build();
 
         /**
-         *
-         *
          * @param uri
          * @return
          */
-        public static  String obtenerIdObjetoMapa(Uri uri) {
+        public static String obtenerIdObjetoMapa(Uri uri) {
             return uri.getPathSegments().get(1);
         }
 
         /**
-         *
-         *
          * @param id
          * @return
          */
         public static Uri crearUriObjetoMapa(String id) {
             return URI_CONTENIDO.buildUpon().appendPath(id).build();
         }
+
+        public static Uri crearUriParaOvni(String id) {
+            return URI_CONTENIDO.buildUpon().appendPath(id).appendPath("ovnis").build();
+        }
+
+        public static Uri crearUriParaFanstama(String id) {
+            return URI_CONTENIDO.buildUpon().appendPath(id).appendPath("fantasmas").build();
+        }
+
+
+        public static Uri crearUriParaHistorico(String id) {
+            return URI_CONTENIDO.buildUpon().appendPath(id).appendPath("historicos").build();
+        }
+
+
+        public static Uri crearUriParaSinReslover(String id) {
+            return URI_CONTENIDO.buildUpon().appendPath(id).appendPath("sin_resolver").build();
+        }
+
+
+        public static Uri crearUriParaComentario(String id) {
+            return URI_CONTENIDO.buildUpon().appendPath(id).appendPath("comentarios").build();
+        }
+
+
+        public static Uri crearUriParaFoto(String id) {
+            return URI_CONTENIDO.buildUpon().appendPath(id).appendPath("fotos").build();
+        }
+
+
+        public static Uri crearUriParaPsicofonia(String id) {
+            return URI_CONTENIDO.buildUpon().appendPath(id).appendPath("psicofonias").build();
+        }
+
+
+        public static boolean tieneFiltro(Uri uri) {
+            return uri != null && uri.getQueryParameter(PARAMETRO_FILTRO) != null;
+        }
+
+        public static String generarIdObjetoMapa() {return "OM-" + UUID.randomUUID().toString();}
     }
 
     /**
@@ -292,6 +340,8 @@ public class DatuBaseKontratua {
         public static Uri crearUriComentario(String id) {
             return URI_CONTENT.buildUpon().appendPath(id).build();
         }
+
+        public static String generarIdComentario() {return "CO-" + UUID.randomUUID().toString();}
     }
 
     public static class Psicofonias implements ColumnasPsicofonia {
@@ -311,6 +361,8 @@ public class DatuBaseKontratua {
         public static Uri crearUriPsicofonia(String id) {
             return URI_CONTENT.buildUpon().appendPath(id).build();
         }
+
+        public static String generarIdPsicofonia() {return "PS-" + UUID.randomUUID().toString();}
     }
 
     public static class Tipos implements ColumnasTipo {
@@ -349,6 +401,8 @@ public class DatuBaseKontratua {
         public static Uri crearUriUsuario(String id) {
             return URI_CONTENT.buildUpon().appendPath(id).build();
         }
+
+        public static String generarIdUsuario() {return "US-" + UUID.randomUUID().toString();}
     }
 
     public static class Fotos implements ColumnasFotos {
@@ -368,5 +422,7 @@ public class DatuBaseKontratua {
         public static Uri crearUriFoto(String id) {
             return URI_CONTENT.buildUpon().appendPath(id).build();
         }
+
+        public static String generarIdFoto() {return "FO-" + UUID.randomUUID().toString();}
     }
 }

@@ -1,6 +1,13 @@
 package com.marluki.misterymap;
 
+import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
+import android.content.OperationApplicationException;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -12,9 +19,73 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import com.marluki.misterymap.provider.DatuBaseKontratua;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    public class Prueba extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            ContentResolver r = getContentResolver();
+            ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+
+            ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Tipos.URI_CONTENT)
+                    .withValue(DatuBaseKontratua.Tipos.ID, 1)
+                    .withValue(DatuBaseKontratua.Tipos.NOMBRE_TIPO, "Ovni")
+                    .build());
+            ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Tipos.URI_CONTENT)
+                    .withValue(DatuBaseKontratua.Tipos.ID, 2)
+                    .withValue(DatuBaseKontratua.Tipos.NOMBRE_TIPO, "Fantasma")
+                    .build());
+            ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Tipos.URI_CONTENT)
+                    .withValue(DatuBaseKontratua.Tipos.ID, 3)
+                    .withValue(DatuBaseKontratua.Tipos.NOMBRE_TIPO, "Historico")
+                    .build());
+            ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Tipos.URI_CONTENT)
+                    .withValue(DatuBaseKontratua.Tipos.ID, 4)
+                    .withValue(DatuBaseKontratua.Tipos.NOMBRE_TIPO, "Sin Resolver")
+                    .build());
+
+            String usuario1 = DatuBaseKontratua.Usuarios.generarIdUsuario();
+            ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Usuarios.URI_CONTENT)
+                    .withValue(DatuBaseKontratua.Usuarios.ID, usuario1)
+                    .withValue(DatuBaseKontratua.Usuarios.NOMBRE, "Fulanito")
+                    .withValue(DatuBaseKontratua.Usuarios.APELLIDO, "Huerfanito")
+                    .withValue(DatuBaseKontratua.Usuarios.CORREO, "huerfanito@gmail.com")
+                    .build());
+
+            String obj1 = DatuBaseKontratua.Objetos_mapa.generarIdObjetoMapa();
+            ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Objetos_mapa.URI_CONTENIDO)
+                    .withValue(DatuBaseKontratua.Objetos_mapa.ID, obj1)
+                    .withValue(DatuBaseKontratua.Objetos_mapa.TIPO_ID, 1)
+                    .withValue(DatuBaseKontratua.Objetos_mapa.LATITUD, 43.293999f)
+                    .withValue(DatuBaseKontratua.Objetos_mapa.LONGITUD, -1.988579f)
+                    .withValue(DatuBaseKontratua.Objetos_mapa.USUARIO_ID, usuario1)
+                    .withValue(DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO, "3 Ovnis en Donosti")
+                    .withValue(DatuBaseKontratua.Objetos_mapa.DETALLES, "3 Ovnis vistos en las inmediaciones de San Sebastian.")
+                    .build());
+
+            ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Objetos_mapa.crearUriParaOvni(obj1))
+                    .withValue(DatuBaseKontratua.Ovnis.DIA, "24-04-2017")
+                    .withValue(DatuBaseKontratua.Ovnis.HORA, "15:45:00")
+                    .build());
+
+            try {
+                r.applyBatch(DatuBaseKontratua.AUTHORITY, ops);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            } catch (OperationApplicationException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +111,34 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        getApplicationContext().deleteDatabase("mistery.db");
+        new Prueba().execute(); // se hacen uns insert en segundo plano
+
+        //PRUEBA DE UN QUERY
+        Cursor c = getContentResolver().query(DatuBaseKontratua.Objetos_mapa.URI_CONTENIDO, null, null, null, null);
+        String emaitza = "";
+        Uri uri_detalles = null;
+        if (c.moveToFirst()) {
+            do {
+                for (int i = 0; i < c.getColumnNames().length; i++) {
+                    emaitza += " | " + c.getColumnName(i) + ": " + c.getString(i);
+                }
+                uri_detalles = DatuBaseKontratua.Objetos_mapa.crearUriParaOvni(c.getString(1));
+            } while (c.moveToNext());
+
+        }
+
+        Cursor e = getContentResolver().query(uri_detalles, null, null, null, null);
+
+        while (e.moveToNext()) {
+            emaitza += "\n\nRESPUESTA CON TABLA OVNI\n";
+            for (int i = 0; i < e.getColumnNames().length; i++) {
+                emaitza += " | " + e.getColumnName(i) + ": " + e.getString(i);
+            }
+        }
+        //colocamos el string para ver las columnas y valores que ha devuelto cada query en el cursor
+        ((TextView) findViewById(R.id.txtAlgo)).setText(emaitza);
     }
 
     @Override

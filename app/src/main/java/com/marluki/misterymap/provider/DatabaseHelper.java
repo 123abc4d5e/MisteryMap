@@ -1,6 +1,5 @@
 package com.marluki.misterymap.provider;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -52,7 +51,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Objetos_mapa.TIPO_ID, referencias.TIPO_ID,
                 Objetos_mapa.LATITUD, Objetos_mapa.LONGITUD,
                 Objetos_mapa.USUARIO_ID, referencias.USUARIO_ID,
-                Objetos_mapa.NOMBRE, Objetos_mapa.DETALLES,
+                Objetos_mapa.NOMBRE_OBJETO, Objetos_mapa.DETALLES,
                 Objetos_mapa.ESTADO, ESTADO_OK, Objetos_mapa.PENDIENTE_INSERCION));
 
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -73,7 +72,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
                         "%s TEXT UNIQUE NOT NULL,%s TEXT NOT NULL %s,%s TEXT NOT NULL %s," +
-                        "%s TEXT NOT NULL,%s TEXT, %s TEXT NOT NULL, %s TEXT NOT NULL, %s INTEGER NOT NULL DEFAULT %s," +
+                        "%s TEXT NOT NULL,%s TEXT DEFAULT NULL, %s TEXT NOT NULL, %s TEXT NOT NULL, %s INTEGER NOT NULL DEFAULT %s," +
                         "%s INTEGER NOT NULL DEFAULT 0)",
                 Tablas.COMENTARIO, BaseColumns._ID, Comentarios.ID,
                 Comentarios.OBJETO_ID, referencias.OBJETO_ID,
@@ -88,23 +87,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Tablas.PSICOFONIA, BaseColumns._ID, Psicofonias.ID,
                 Psicofonias.OBJETO_ID, referencias.OBJETO_ID,
                 Psicofonias.URL, Psicofonias.USUARIO_ID, referencias.USUARIO_ID,
-                Psicofonias.NOMBRE,
+                Psicofonias.NOMBRE_PSICOFONIA,
                 Psicofonias.ESTADO, ESTADO_OK, Psicofonias.PENDIENTE_INSERCION));
 
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "%s INTEGER NOT NULL,%s TEXT NOT NULL)",
-                Tablas.TIPO, BaseColumns._ID, Tipos.ID, Tipos.NOMBRE));
+                        "%s INTEGER UNIQUE NOT NULL,%s TEXT NOT NULL)",
+                Tablas.TIPO, BaseColumns._ID, Tipos.ID, Tipos.NOMBRE_TIPO));
 
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "%s TEXT UNIQUE NOT NULL,%s TEXT NOT NULL)",
-                Tablas.USUARIO, BaseColumns._ID, Usuarios.ID, Usuarios.NOMBRE));
+                        "%s TEXT UNIQUE NOT NULL,%s TEXT NOT NULL, %s TEXT NOT NULL, %s TEXT NOT NULL, %s INTEGER NOT NULL DEFAULT %s," +
+                        "%s INTEGER NOT NULL DEFAULT 0)",
+                Tablas.USUARIO, BaseColumns._ID, Usuarios.ID, Usuarios.NOMBRE,
+                Usuarios.APELLIDO, Usuarios.CORREO,
+                Usuarios.ESTADO, ESTADO_OK, Usuarios.PENDIENTE_INSERCION));
 
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "%s TEXT UNIQUE NOT NULL,%s TEXT NOT NULL %s, %s TEXT NOT NULL, %s TEXT NOT NULL, %s TEXT NOT NULL %s, %s INTEGER NOT NULL DEFAULT %s," +
+                        "%s TEXT UNIQUE NOT NULL, %s TEXT NOT NULL %s, %s TEXT NOT NULL %s, %s TEXT NOT NULL, %s TEXT NOT NULL, %s INTEGER NOT NULL DEFAULT %s," +
                         "%s INTEGER NOT NULL DEFAULT 0)",
                 Tablas.FOTO, BaseColumns._ID, Fotos.ID, Fotos.OBJETO_ID, referencias.OBJETO_ID,
                 Fotos.USUARIO_ID, referencias.USUARIO_ID,
-                Fotos.NOMBRE, Fotos.URL, Fotos.ESTADO, ESTADO_OK, Fotos.PENDIENTE_INSERCION));
+                Fotos.NOMBRE_FOTO, Fotos.URL, Fotos.ESTADO, ESTADO_OK, Fotos.PENDIENTE_INSERCION));
     }
 
     @Override
