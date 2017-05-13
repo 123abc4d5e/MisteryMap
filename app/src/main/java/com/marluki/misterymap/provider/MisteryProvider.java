@@ -15,7 +15,6 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.marluki.misterymap.model.Usuario;
 import com.marluki.misterymap.provider.DatuBaseKontratua.*;
 
 import java.util.ArrayList;
@@ -188,7 +187,7 @@ public class MisteryProvider extends ContentProvider {
 
     private final String[] proyObjetos = new String[]{
             DatabaseHelper.Tablas.OBJETO_MAPA + ".*",
-            Usuarios.NOMBRE, Usuarios.APELLIDO,
+            Usuarios.NOMBRE, Usuarios.FOTO,
             DatabaseHelper.Tablas.TIPO + "." + Tipos.NOMBRE_TIPO
     };
     private final String[] proyOvni = new String[]{
@@ -216,21 +215,19 @@ public class MisteryProvider extends ContentProvider {
     private final String[] proyObjComentario = new String[]{
             DatabaseHelper.Tablas.OBJETO_MAPA + "." + Objetos_mapa.NOMBRE_OBJETO,
             DatabaseHelper.Tablas.COMENTARIO + ".*",
-            DatabaseHelper.Tablas.USUARIO + "." + Usuarios.NOMBRE,
-            DatabaseHelper.Tablas.USUARIO + "." + Usuarios.APELLIDO,
-            DatabaseHelper.Tablas.USUARIO + "." + Usuarios.CORREO
+            Usuarios.NOMBRE, Usuarios.FOTO
     };
     private final String[] proyComentario = new String[]{
             DatabaseHelper.Tablas.COMENTARIO + ".*",
-            Usuarios.NOMBRE, Usuarios.APELLIDO
+            Usuarios.NOMBRE, Usuarios.FOTO
     };
     private final String[] proyPsicofonia = new String[]{
             DatabaseHelper.Tablas.PSICOFONIA + ".*",
-            Usuarios.NOMBRE, Usuarios.APELLIDO
+            Usuarios.NOMBRE, Usuarios.FOTO
     };
     private final String[] proyFoto = new String[]{
             DatabaseHelper.Tablas.FOTO + ".*",
-            Usuarios.NOMBRE, Usuarios.APELLIDO
+            Usuarios.NOMBRE, Usuarios.FOTO
     };
 
     @NonNull
@@ -581,13 +578,10 @@ public class MisteryProvider extends ContentProvider {
                                 " AND (" + selection + ')' : ""),
                         selectionArgs, null, null, null);
                 break;
-            case COMENTARIOS:// ESTO DEVOLVE TODOS LOS COMENTARIOS SIN REFERENCIA A OTRO COMENTARIO ORDENADO POR FECHA
-                String[] claves = new String[]{"NULL"};
-                String seleccion = String.format("%s=?", Comentarios.COMENTARIO_ID);
-                builder.setTables(COMENTARIO_JOIN_USUARIO);
-                c = builder.query(db, proyComentario, seleccion, claves, null, null,
-                        DatabaseHelper.Tablas.COMENTARIO + "." + Comentarios.DIA + "," +
-                                DatabaseHelper.Tablas.COMENTARIO + "." + Comentarios.HORA);
+            case COMENTARIOS:
+                //Consultando todos los objetos
+                c = db.query(DatabaseHelper.Tablas.COMENTARIO, projection,
+                        selection, selectionArgs, null, null, sortOrder);
                 break;
             case COMENTARIOS_ID://ESTO DEVUELVE UN COMENTARIO SEGUN SU ID
                 id = Comentarios.obtenerIdComentario(uri);
@@ -603,6 +597,26 @@ public class MisteryProvider extends ContentProvider {
                 c = builder.query(db, proyComentario, seleccion1, claves1, null, null,
                         DatabaseHelper.Tablas.COMENTARIO + "." + Comentarios.DIA + "," +
                                 DatabaseHelper.Tablas.COMENTARIO + "." + Comentarios.HORA);
+                break;
+            case OVNIS:
+                //Consultando todos los objetos
+                c = db.query(DatabaseHelper.Tablas.OVNI, projection,
+                        selection, selectionArgs, null, null, sortOrder);
+                break;
+            case FANTASMAS:
+                //Consultando todos los objetos
+                c = db.query(DatabaseHelper.Tablas.FANTASMA, projection,
+                        selection, selectionArgs, null, null, sortOrder);
+                break;
+            case HISTORICOS:
+                //Consultando todos los objetos
+                c = db.query(DatabaseHelper.Tablas.HISTORICO, projection,
+                        selection, selectionArgs, null, null, sortOrder);
+                break;
+            case SIN_RESOLVER:
+                //Consultando todos los objetos
+                c = db.query(DatabaseHelper.Tablas.SIN_RESOLVER, projection,
+                        selection, selectionArgs, null, null, sortOrder);
                 break;
             case FOTOS:
                 builder.setTables(FOTO_JOIN_USUARIO);

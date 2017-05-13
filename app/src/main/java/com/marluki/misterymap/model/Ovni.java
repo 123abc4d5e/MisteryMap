@@ -42,4 +42,15 @@ public class Ovni {
     public void setHora(String hora) {
         this.hora = hora;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        Ovni ov = (Ovni)obj;
+        boolean b = !ov.getObjeto_id().equals(objeto_id) && ov.getObjeto_id() != null;
+        boolean b1 = !ov.getDia().equals(dia) && ov.getDia() != null;
+        boolean b2 = !ov.getHora().equals(hora) && ov.getHora() != null;
+
+        if (b || b1 || b2) return false;
+        else return true;
+    }
 }

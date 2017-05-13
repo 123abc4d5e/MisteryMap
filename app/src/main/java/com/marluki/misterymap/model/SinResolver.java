@@ -32,4 +32,14 @@ public class SinResolver {
     public void setFecha(String fecha) {
         this.fecha = fecha;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        SinResolver h = (SinResolver) obj;
+        boolean b = !h.getObjeto_id().equals(objeto_id) && h.getObjeto_id() != null;
+        boolean b1 = !h.getFecha().equals(fecha) && h.getFecha() != null;
+
+        if (b || b1) return false;
+        else return true;
+    }
 }

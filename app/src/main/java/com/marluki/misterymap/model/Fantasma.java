@@ -7,10 +7,10 @@ package com.marluki.misterymap.model;
 public class Fantasma {
 
       private  String objeto_id;
-      private  String visto;
-      private String fake;
+      private  int visto;
+      private int fake;
 
-    public Fantasma(String objeto_id, String visto, String fake) {
+    public Fantasma(String objeto_id, int visto, int fake) {
         this.objeto_id = objeto_id;
         this.visto = visto;
         this.fake = fake;
@@ -27,19 +27,30 @@ public class Fantasma {
         this.objeto_id = objeto_id;
     }
 
-    public String getVisto() {
+    public int getVisto() {
         return visto;
     }
 
-    public void setVisto(String visto) {
+    public void setVisto(int visto) {
         this.visto = visto;
     }
 
-    public String getFake() {
+    public int getFake() {
         return fake;
     }
 
-    public void setFake(String fake) {
+    public void setFake(int fake) {
         this.fake = fake;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Fantasma f = (Fantasma)obj;
+        boolean b = !f.getObjeto_id().equals(objeto_id) && f.getObjeto_id() != null;
+        boolean b1 = f.getVisto() != visto;
+        boolean b2 = f.getFake() != fake;
+
+        if (b || b1 || b2) return false;
+        else return true;
     }
 }

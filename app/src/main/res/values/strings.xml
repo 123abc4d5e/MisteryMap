@@ -5,4 +5,9 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+
+    <!--Google Client Id -->
+    <string name="client_id">clave_de_cliente_de_google</string>
+    <string name="sync_account_type">com.google</string>
+    <string name="sync_authority">com.marluki.misterymap</string>
 </resources>

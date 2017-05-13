@@ -56,8 +56,7 @@ public class MainActivity extends AppCompatActivity
             ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Usuarios.URI_CONTENT)
                     .withValue(DatuBaseKontratua.Usuarios.ID, usuario1)
                     .withValue(DatuBaseKontratua.Usuarios.NOMBRE, "Fulanito")
-                    .withValue(DatuBaseKontratua.Usuarios.APELLIDO, "Huerfanito")
-                    .withValue(DatuBaseKontratua.Usuarios.CORREO, "huerfanito@gmail.com")
+                    .withValue(DatuBaseKontratua.Usuarios.FOTO, "huerfanito@gmail.com")
                     .build());
 
             String obj1 = DatuBaseKontratua.Objetos_mapa.generarIdObjetoMapa();
@@ -137,7 +136,11 @@ public class MainActivity extends AppCompatActivity
                 emaitza += " | " + e.getColumnName(i) + ": " + e.getString(i);
             }
         }
-        //colocamos el string para ver las columnas y valores que ha devuelto cada query en el cursor
+        /*
+         * colocamos el string para ver las columnas y valores que ha devuelto cada query en el cursor
+         * y añadimos el token recivido desde SingInActivity
+         */
+        emaitza += "\n\n\n" + getIntent().getExtras().getString("token", "");
         ((TextView) findViewById(R.id.txtAlgo)).setText(emaitza);
     }
 

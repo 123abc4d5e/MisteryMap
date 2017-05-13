@@ -95,10 +95,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Tablas.TIPO, BaseColumns._ID, Tipos.ID, Tipos.NOMBRE_TIPO));
 
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "%s TEXT UNIQUE NOT NULL,%s TEXT NOT NULL, %s TEXT NOT NULL, %s TEXT NOT NULL, %s INTEGER NOT NULL DEFAULT %s," +
+                        "%s TEXT UNIQUE NOT NULL, %s TEXT NOT NULL, %s TEXT DEFAULT NULL, %s INTEGER NOT NULL DEFAULT %s," +
                         "%s INTEGER NOT NULL DEFAULT 0)",
-                Tablas.USUARIO, BaseColumns._ID, Usuarios.ID, Usuarios.NOMBRE,
-                Usuarios.APELLIDO, Usuarios.CORREO,
+                Tablas.USUARIO, BaseColumns._ID, Usuarios.ID, Usuarios.NOMBRE, Usuarios.FOTO,
                 Usuarios.ESTADO, ESTADO_OK, Usuarios.PENDIENTE_INSERCION));
 
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +

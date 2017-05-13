@@ -83,8 +83,7 @@ public class DatuBaseKontratua {
     interface ColumnasUsuario {
         String ID = "id";
         String NOMBRE = "nombre";
-        String APELLIDO = "apellido";
-        String CORREO = "correo";
+        String FOTO = "foto";
 
         String ESTADO = "estado";
         String PENDIENTE_INSERCION = "pendiente_insercion";

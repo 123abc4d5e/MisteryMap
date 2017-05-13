@@ -8,17 +8,15 @@ public class Usuario {
 
     String id;
     String nombre;
-    String apellido;
-    String correo;
+    String foto;
 
     public Usuario() {
     }
 
-    public Usuario(String id, String nombre, String apellido, String correo) {
+    public Usuario(String id, String nombre, String foto) {
         this.id = id;
         this.nombre = nombre;
-        this.apellido = apellido;
-        this.correo = correo;
+        this.foto = foto;
     }
 
     public String getId() {
@@ -37,19 +35,22 @@ public class Usuario {
         this.nombre = nombre;
     }
 
-    public String getApellido() {
-        return apellido;
+    public String getFoto() {
+        return foto;
     }
 
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
+    public void setFoto(String foto) {
+        this.foto = foto;
     }
 
-    public String getCorreo() {
-        return correo;
-    }
+    @Override
+    public boolean equals(Object obj) {
+        Usuario c = (Usuario) obj;
+        boolean b = !c.getId().equals(id) && c.getId() != null;
+        boolean b1 = !c.getNombre().equals(nombre) && c.getNombre() != null;
+        boolean b2 = !c.getFoto().equals(foto) && c.getFoto() != null;
 
-    public void setCorreo(String correo) {
-        this.correo = correo;
+        if (b || b1 || b2) return false;
+        else return true;
     }
 }
