@@ -11,4 +11,6 @@
     <string name="client_id">copia aki tu id de cliente</string>
     <string name="sync_account_type">com.google</string>
     <string name="sync_authority">com.marluki.misterymap</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
