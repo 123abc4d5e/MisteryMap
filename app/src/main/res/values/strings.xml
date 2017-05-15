@@ -8,7 +8,7 @@
 
 
     <!--Google Client Id -->
-    <string name="client_id">991183000666-sqtn7bj7pr7jipkqfbcr7edj3pv1skp9.apps.googleusercontent.com</string>
+    <string name="client_id">copia aki tu id de cliente</string>
     <string name="sync_account_type">com.google</string>
     <string name="sync_authority">com.marluki.misterymap</string>
 </resources>
