@@ -7,7 +7,6 @@ import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.content.SyncResult;
 import android.database.Cursor;
@@ -18,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -27,8 +27,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.marluki.misterymap.MainActivity;
 import com.marluki.misterymap.R;
 import com.marluki.misterymap.model.Comentario;
 import com.marluki.misterymap.model.Fantasma;
@@ -40,9 +38,10 @@ import com.marluki.misterymap.model.Psicofonia;
 import com.marluki.misterymap.model.SinResolver;
 import com.marluki.misterymap.model.Tipo;
 import com.marluki.misterymap.model.Usuario;
-import com.marluki.misterymap.provider.DatabaseHelper;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
+import com.marluki.misterymap.provider.MisteryProvider;
 import com.marluki.misterymap.utils.Cons;
+import com.marluki.misterymap.utils.Utils;
 import com.marluki.misterymap.view.SignInResolutionActivity;
 import com.marluki.misterymap.volley.VolleySingleton;
 
@@ -54,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by charl on 12/05/2017.
@@ -63,6 +63,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
         GoogleApiClient.ConnectionCallbacks {
 
     private String TAG = "SyncAdapter";
+
+    private static boolean x = false;
 
     private ContentResolver resolver;
     private GoogleApiClient mGoogleApiClient;
@@ -102,46 +104,41 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
 
         if (!soloSubida) {
             // sincronizacion local
-            doSyncLocal(syncResult, Cons.GET_ALL_TYPE_URL);
-            doSyncLocal(syncResult, Cons.GET_ALL_USER_URL);
-            doSyncLocal(syncResult, Cons.GET_ALL_OBJ_URL);
-            doSyncLocal(syncResult, Cons.GET_ALL_OVNI_URL);
-            doSyncLocal(syncResult, Cons.GET_ALL_FANT_URL);
-            doSyncLocal(syncResult, Cons.GET_ALL_HIST_URL);
-            doSyncLocal(syncResult, Cons.GET_ALL_SIN_URL);
-            doSyncLocal(syncResult, Cons.GET_ALL_COMENT_URL);
-            doSyncLocal(syncResult, Cons.GET_ALL_PSICO_URL);
-            doSyncLocal(syncResult, Cons.GET_ALL_FOTO_URL);
+            doSyncLocal(syncResult);
         } else {
-
+            updateRemoteData(extras.getString("token", null));
         }
+        mGoogleApiClient.disconnect();
 
     }
 
-    private void doSyncLocal(final SyncResult syncResult, String url) {
-        Log.i(TAG, "Iniciando peticion GET a" + url);
+    private void doSyncLocal(final SyncResult syncResult) {
+        String[] urls = Cons.GET_URLS;
+        for (int i = 0 ; i < urls.length ; i++) {
+            Log.i(TAG, "Iniciando peticion GET a" + urls[i]);
 
-        VolleySingleton.getInstance(getContext()).addToRequestQueue(
-                new JsonObjectRequest(
-                        Request.Method.GET,
-                        url,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                proccesGetRequest(response, syncResult);
+            VolleySingleton.getInstance(getContext()).addToRequestQueue(
+                    new JsonObjectRequest(
+                            Request.Method.GET,
+                            urls[i],
+                            new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    procesarGetResponse(response, syncResult);
+                                }
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    Log.d(TAG, error.networkResponse.toString());
+                                }
                             }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.d(TAG, error.networkResponse.toString());
-                            }
-                        }
-                )
-        );
+                    )
+            );
+        }
     }
 
-    private void proccesGetRequest(JSONObject response, SyncResult syncResult) {
+    private void procesarGetResponse(JSONObject response, SyncResult syncResult) {
         try {
             String estado = response.getString(Cons.ESTADO);
 
@@ -186,7 +183,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
                     expenseMap.put(o.getId(), o);
 
                 // SQLite databasean dauden datuekin konparatzen
-                uri = DatuBaseKontratua.Objetos_mapa.URI_CONTENIDO;
+                uri = DatuBaseKontratua.Objetos_mapa.URI_CONTENT;
                 Cursor c = resolver.query(uri, null, null, null, null);
                 assert c != null;
 
@@ -196,7 +193,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
                     syncResult.stats.numEntries++;
 
                     id = c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID));
-                    ObjetoMapa objetoMapa = new ObjetoMapa(id, c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.TIPO_ID)),
+                    ObjetoMapa objetoMapa = new ObjetoMapa(id, c.getInt(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.TIPO_ID)),
                             c.getFloat(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LATITUD)),
                             c.getFloat(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LONGITUD)),
                             c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.USUARIO_ID)),
@@ -708,7 +705,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
                 // Hash taula jaso diren datuak gordetzeko
                 HashMap<String, Tipo> expenseMapTi = new HashMap<String, Tipo>();
                 for (Tipo o : dataTi)
-                    expenseMapTi.put(o.getId(), o);
+                    expenseMapTi.put(String.valueOf(o.getId()), o);
 
                 // SQLite databasean dauden datuekin konparatzen
                 uri = DatuBaseKontratua.Tipos.URI_CONTENT;
@@ -720,14 +717,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
                 while (c8.moveToNext()) {
                     syncResult.stats.numEntries++;
 
-                    id = c8.getString(c8.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID));
-                    Tipo tipo = new Tipo(id, c8.getString(c8.getColumnIndex(DatuBaseKontratua.Tipos.NOMBRE_TIPO)));
+                    int tipo_id = c8.getInt(c8.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID));
+                    Tipo tipo = new Tipo(tipo_id, c8.getString(c8.getColumnIndex(DatuBaseKontratua.Tipos.NOMBRE_TIPO)));
 
-                    Tipo match = expenseMapTi.get(id);
+                    Tipo match = expenseMapTi.get(String.valueOf(tipo_id));
 
                     if (match != null) {
-                        expenseMapTi.remove(id);
-                        Uri existingUri = DatuBaseKontratua.Tipos.crearUriTipo(id);
+                        expenseMapTi.remove(String.valueOf(tipo_id));
+                        Uri existingUri = DatuBaseKontratua.Tipos.crearUriTipo(String.valueOf(tipo_id));
 
                         if (!tipo.equals(match)) {
                             Log.i(TAG, "Programando actualizacion de " + existingUri);
@@ -741,7 +738,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
                         }
                     } else {
                         // Ez denez existitzen datu basetik(sqlite) ezabatzen da
-                        Uri deleteUri = DatuBaseKontratua.Tipos.crearUriTipo(id);
+                        Uri deleteUri = DatuBaseKontratua.Tipos.crearUriTipo(String.valueOf(tipo_id));
                         Log.i(TAG, "Programando eliminacion de: " + deleteUri);
                         ops.add(ContentProviderOperation.newDelete(deleteUri).build());
                         syncResult.stats.numDeletes++;
@@ -844,34 +841,277 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
         }
     }
 
+    private void updateRemoteData(final String token) {
+        if (token == null) {
+            Log.i(TAG, "El token es null!!");
+            return;
+        }
+
+        Log.i(TAG, "Actualizando el servidor...");
+        startUpdate();
+        insertRequest(getInsertData(), token);
+        updateRequest(getUpdateData(), token);
+        deleteRequest(getDeleteData(), token);
+
+
+
+    }
+
+    /**
+     *
+     * @param cursors
+     * @param token
+     */
+    private void insertRequest(Cursor[] cursors, final String token) {
+        for(int i = 0 ; i < cursors.length ; i++) {
+            Cursor c = cursors[i];
+            Uri uri = Cons.INSERT_URIS[i];
+            String url = Cons.INSERT_URLS[i];
+            if(c.getCount() > 0) {
+                while (c.moveToNext()) {
+                    VolleySingleton.getInstance(getContext()).addToRequestQueue(
+                            new JsonObjectRequest(
+                                    Request.Method.POST,
+                                    url,
+                                    Utils.deCursorAJSONObject(c, uri, token),
+                                    new Response.Listener<JSONObject>() {
+                                        @Override
+                                        public void onResponse(JSONObject response) {
+                                            procesarInsertResponse(response, token);
+                                        }
+                                    },
+                                    new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            Log.d(TAG, "Error Volley: " + error.getMessage());
+                                        }
+                                    }
+                            ) {
+                                @Override
+                                public String getBodyContentType() {
+                                    return "application/json; charset=utf-8" + getParamsEncoding();
+                                }
+
+                                @Override
+                                public Map<String, String> getHeaders() throws AuthFailureError {
+                                    Map<String, String> headers = new HashMap<String, String>();
+                                    headers.put("Content-Type", "application/json; charset=utf-8");
+                                    headers.put("Accept", "application/json");
+                                    return headers;
+                                }
+                            }
+                    );
+                }
+            } else {
+                Log.i(TAG, "No se requiere sincronización!!");
+            }
+            c.close();
+        }
+    }
+
+    /**
+     *
+     * @param cursors
+     * @param token
+     */
+    private void updateRequest(Cursor[] cursors, final String token) {
+        for(int i = 0 ; i < cursors.length ; i++) {
+            Cursor c = cursors[i];
+            Uri uri = Cons.INSERT_URIS[i];
+            String url = Cons.UPDATE_URLS[i];
+            if(c.getCount() > 0) {
+                while (c.moveToNext()) {
+                    VolleySingleton.getInstance(getContext()).addToRequestQueue(
+                            new JsonObjectRequest(
+                                    Request.Method.POST,
+                                    url,
+                                    Utils.deCursorAJSONObject(c, uri, token),
+                                    new Response.Listener<JSONObject>() {
+                                        @Override
+                                        public void onResponse(JSONObject response) {
+                                            procesarUpdateResponse(response, token);
+                                        }
+                                    },
+                                    new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            Log.d(TAG, "Error Volley: " + error.getMessage());
+                                        }
+                                    }
+                            ) {
+                                @Override
+                                public String getBodyContentType() {
+                                    return "application/json; charset=utf-8" + getParamsEncoding();
+                                }
+
+                                @Override
+                                public Map<String, String> getHeaders() throws AuthFailureError {
+                                    Map<String, String> headers = new HashMap<String, String>();
+                                    headers.put("Content-Type", "application/json; charset=utf-8");
+                                    headers.put("Accept", "application/json");
+                                    return headers;
+                                }
+                            }
+                    );
+                }
+            } else {
+                Log.i(TAG, "No se requiere sincronización en " + uri);
+            }
+            c.close();
+        }
+    }
+
+    /**
+     *
+     * @param cursors
+     * @param token
+     */
+    private void deleteRequest(Cursor[] cursors, final String token) {
+        for(int i = 0 ; i < cursors.length ; i++) {
+            Cursor c = cursors[i];
+            Uri uri = Cons.DELETE_URIS[i];
+            String url = Cons.DELETE_URLS[i];
+            if(c.getCount() > 0) {
+                while (c.moveToNext()) {
+                    VolleySingleton.getInstance(getContext()).addToRequestQueue(
+                            new JsonObjectRequest(
+                                    Request.Method.POST,
+                                    url,
+                                    Utils.deCursorAJSONObject(c, uri, token),
+                                    new Response.Listener<JSONObject>() {
+                                        @Override
+                                        public void onResponse(JSONObject response) {
+                                            procesarDeleteResponse(response, token);
+                                        }
+                                    },
+                                    new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            Log.d(TAG, "Error Volley: " + error.getMessage());
+                                        }
+                                    }
+                            ) {
+                                @Override
+                                public String getBodyContentType() {
+                                    return "application/json; charset=utf-8" + getParamsEncoding();
+                                }
+
+                                @Override
+                                public Map<String, String> getHeaders() throws AuthFailureError {
+                                    Map<String, String> headers = new HashMap<String, String>();
+                                    headers.put("Content-Type", "application/json; charset=utf-8");
+                                    headers.put("Accept", "application/json");
+                                    return headers;
+                                }
+                            }
+                    );
+                }
+            } else {
+                Log.i(TAG, "No se requiere sincronización en uri");
+            }
+            c.close();
+        }
+    }
+
+
     /**
      * Estado zutabea sinkronizatzera aldatzen du
      */
     private void startUpdate() {
         int results=0;
-        Uri[] uri = new Uri[]{DatuBaseKontratua.Usuarios.URI_CONTENT,
-                DatuBaseKontratua.Objetos_mapa.URI_CONTENIDO,
-                DatuBaseKontratua.Comentarios.URI_CONTENT,
-                DatuBaseKontratua.Psicofonias.URI_CONTENT,
-                DatuBaseKontratua.Fotos.URI_CONTENT
-        };
+        Uri[] uris = Cons.INSERT_URIS;
 
-        for(int i=0 ; i < uri.length ; i++) {
-            String selection = DatuBaseKontratua.Objetos_mapa.PENDIENTE_INSERCION + "=? AND "
-                    + DatuBaseKontratua.Objetos_mapa.ESTADO + "=?";
-            String[] selectionArgs = new String[]{"1", DatuBaseKontratua.ESTADO_OK + ""};
+        for(int i=0 ; i < uris.length ; i++) {
+
+            String selection = "(" + DatuBaseKontratua.Objetos_mapa.PENDIENTE_INSERCION + "=? OR " +
+                    DatuBaseKontratua.Objetos_mapa.PENDIENTE_ACTUALIZACION + "=? OR " +
+                    DatuBaseKontratua.Objetos_mapa.PENDIENTE_ELIMINACION + "=?) " +
+                    "AND " + DatuBaseKontratua.Objetos_mapa.ESTADO + "=?";
+
+            String[] selectionArgs = new String[]{"1", "1", "1", DatuBaseKontratua.ESTADO_OK + ""};
+
+            if (MisteryProvider.uriMatcher.match(uris[i]) == MisteryProvider.USUARIOS) {
+                selection = DatuBaseKontratua.Objetos_mapa.PENDIENTE_ACTUALIZACION + "=? " +
+                        "AND " + DatuBaseKontratua.Objetos_mapa.ESTADO + "=?";
+                selectionArgs = new String[]{"1", DatuBaseKontratua.ESTADO_SYNC + ""};
+            }
 
             ContentValues v = new ContentValues();
             v.put(DatuBaseKontratua.Objetos_mapa.ESTADO, DatuBaseKontratua.ESTADO_SYNC);
 
-            results += resolver.update(uri[i], v, selection, selectionArgs);
+            results += resolver.update(uris[i], v, selection, selectionArgs);
 
         }
-        Log.i(TAG, "Registros puestos en cola de inserción:" + results);
+        Log.i(TAG, "Registros puestos en cola para insertar, actualizar o eliminar:" + results);
 
     }
 
-    private void finishUpdate(String id, String tabla) {
+    /**
+     *
+     * @return
+     */
+    private Cursor[] getUpdateData() {
+        int registrosSucios = 0;
+        Uri[] uris = Cons.UPDATE_URIS;
+        Cursor[] cursors = new Cursor[uris.length];
+        String selection = DatuBaseKontratua.Objetos_mapa.PENDIENTE_ACTUALIZACION + "=? AND "
+                + DatuBaseKontratua.Objetos_mapa.ESTADO + "=?";
+        String[] selectionArgs = new String[]{"1", DatuBaseKontratua.ESTADO_SYNC + ""};
+
+        for (int i = 0 ; i < uris.length ; i++) {
+            cursors[i] = resolver.query(uris[i], null, selection, selectionArgs, null);
+            registrosSucios += cursors[i].getCount();
+        }
+        Log.i(TAG, "Se encontraron " + registrosSucios + " registros sucios pendientes para actualizar!!");
+        return cursors;
+    }
+
+    /**
+     *
+     * @return
+     */
+    private Cursor[] getDeleteData() {
+        int registrosSucios = 0;
+        Uri[] uris = Cons.DELETE_URIS;
+        Cursor[] cursors = new Cursor[uris.length];
+        String selection = DatuBaseKontratua.Objetos_mapa.PENDIENTE_ELIMINACION + "=? AND "
+                + DatuBaseKontratua.Objetos_mapa.ESTADO + "=?";
+        String[] selectionArgs = new String[]{"1", DatuBaseKontratua.ESTADO_SYNC + ""};
+
+        for (int i = 0 ; i < uris.length ; i++) {
+            cursors[i] = resolver.query(uris[i], null, selection, selectionArgs, null);
+            registrosSucios += cursors[i].getCount();
+        }
+        Log.i(TAG, "Se encontraron " + registrosSucios + " registros sucios pendientes para eliminar!!");
+        return cursors;
+    }
+
+    /**
+     *
+     * @return
+     */
+    private Cursor[] getInsertData() {
+        int registrosSucios = 0;
+        Uri[] uris = Cons.INSERT_URIS;
+        Cursor[] cursors = new Cursor[uris.length];
+        String selection = DatuBaseKontratua.Objetos_mapa.PENDIENTE_INSERCION + "=? AND "
+                + DatuBaseKontratua.Objetos_mapa.ESTADO + "=?";
+        String[] selectionArgs = new String[]{"1", DatuBaseKontratua.ESTADO_SYNC + ""};
+
+        for (int i = 0 ; i < uris.length ; i++) {
+            cursors[i] = resolver.query(uris[i], null, selection, selectionArgs, null);
+            registrosSucios += cursors[i].getCount();
+        }
+        Log.i(TAG, "Se encontraron " + registrosSucios + " registros sucios pendientes para insertar!!");
+        return cursors;
+    }
+
+    /**
+     *
+     * @param id
+     * @param tabla
+     */
+    private void finishUpdate(String id, String tabla, int idOperation) {
         // Eguneraketa amaitzeko uri-a
         Uri uri = null;
         switch (tabla) {
@@ -894,21 +1134,225 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
                 break;
         }
 
-
         String selection = DatuBaseKontratua.Objetos_mapa.ID + "=?";
         String[] selectionArgs = new String[]{String.valueOf(id)};
 
         ContentValues v = new ContentValues();
-        v.put(DatuBaseKontratua.Objetos_mapa.PENDIENTE_INSERCION, "0");
+        switch (idOperation) {
+            case Cons.ID_INSERT:
+                v.put(DatuBaseKontratua.Objetos_mapa.PENDIENTE_INSERCION, "0");
+                break;
+            case Cons.ID_UPDATE:
+                v.put(DatuBaseKontratua.Objetos_mapa.PENDIENTE_ACTUALIZACION, "0");
+                break;
+            case Cons.ID_DELETE:
+                v.put(DatuBaseKontratua.Objetos_mapa.PENDIENTE_ELIMINACION, "0");
+                break;
+        }
         v.put(DatuBaseKontratua.Objetos_mapa.ESTADO, DatuBaseKontratua.ESTADO_OK);
 
         resolver.update(uri, v, selection, selectionArgs);
     }
 
+    public void procesarInsertResponse(JSONObject response, String token) {
+
+        try {
+            // Egoera jaso
+            String estado = response.getString(Cons.ESTADO);
+            // Mezua jaso
+            String mensaje = response.getString(Cons.MENSAJE);
+            // Identifikatzailea jaso
+            String id = response.getString(Cons.ID);
+            // Taula izena jaso
+            String tabla = response.getString(Cons.TABLA);
+
+            switch (estado) {
+                case Cons.SUCCESS:
+                    Log.i(TAG, mensaje);
+                    if (tabla.equals(Cons.TABLA_OBJETO_MAPA)) {
+                        JSONArray array = response.getJSONArray(Cons.TABLA_OBJETO_MAPA);
+                        ObjetoMapa[] res = gson.fromJson(array != null ? array.toString() : null, ObjetoMapa[].class);
+
+                        int tipo = res[0].getTipo_id();
+
+                        if (!isUpdateData(id, tipo, token, true)) {
+                            return;
+                        }
+                    }
+                    finishUpdate(id, tabla, Cons.ID_INSERT);
+                    break;
+
+                case Cons.FAILED:
+                    Log.i(TAG, mensaje);
+                    break;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void procesarUpdateResponse(JSONObject response, String token) {
+
+        try {
+            // Egoera jaso
+            String estado = response.getString(Cons.ESTADO);
+            // Mezua jaso
+            String mensaje = response.getString(Cons.MENSAJE);
+            // Identifikatzailea jaso
+            String id = response.getString(Cons.ID);
+            // Taula izena jaso
+            String tabla = response.getString(Cons.TABLA);
+
+            switch (estado) {
+                case Cons.SUCCESS:
+                    Log.i(TAG, mensaje);
+                    if (tabla.equals(Cons.TABLA_OBJETO_MAPA)) {
+                        JSONArray array = response.getJSONArray(Cons.TABLA_OBJETO_MAPA);
+                        ObjetoMapa[] res = gson.fromJson(array != null ? array.toString() : null, ObjetoMapa[].class);
+
+                        int tipo = res[0].getTipo_id();
+
+                        if (!isUpdateData(id, tipo, token, false)) {
+                            return;
+                        }
+                    }
+                    finishUpdate(id, tabla, Cons.ID_UPDATE);
+                    break;
+
+                case Cons.FAILED:
+                    Log.i(TAG, mensaje);
+                    break;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void procesarDeleteResponse(JSONObject response, String token) {
+
+        try {
+            // Egoera jaso
+            String estado = response.getString(Cons.ESTADO);
+            // Mezua jaso
+            String mensaje = response.getString(Cons.MENSAJE);
+            // Identifikatzailea jaso
+            String id = response.getString(Cons.ID);
+            // Taula izena jaso
+            String tabla = response.getString(Cons.TABLA);
+
+            switch (estado) {
+                case Cons.SUCCESS:
+                    finishUpdate(id, tabla, Cons.ID_DELETE);
+                    break;
+
+                case Cons.FAILED:
+                    Log.i(TAG, mensaje);
+                    break;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private boolean isUpdateData(String id, int tipo, String token, boolean isInsert) {
+        x = false;
+        Uri uri;
+        String url;
+
+        if(isInsert) {
+            switch (tipo) {
+                case 1:
+                    uri = DatuBaseKontratua.Ovnis.crearUriOvni(id);
+                    url = Cons.INSERT_OVNI_URL;
+                    break;
+                case 2:
+                    uri = DatuBaseKontratua.Fantasmas.crearUriFantasma(id);
+                    url = Cons.INSERT_FANT_URL;
+                    break;
+                case 3:
+                    uri = DatuBaseKontratua.Historicos.crearUriHistorico(id);
+                    url = Cons.INSERT_HIST_URL;
+                    break;
+                case 4:
+                    uri = DatuBaseKontratua.SinResolver.crearUriSinResolver(id);
+                    url = Cons.INSERT_SIN_URL;
+                    break;
+                default:
+                    return false;
+            }
+        } else {
+            switch (tipo) {
+                case 1:
+                    uri = DatuBaseKontratua.Ovnis.crearUriOvni(id);
+                    url = Cons.UPDATE_OVNI_URL;
+                    break;
+                case 2:
+                    uri = DatuBaseKontratua.Fantasmas.crearUriFantasma(id);
+                    url = Cons.UPDATE_FANT_URL;
+                    break;
+                case 3:
+                    uri = DatuBaseKontratua.Historicos.crearUriHistorico(id);
+                    url = Cons.UPDATE_HIST_URL;
+                    break;
+                case 4:
+                    uri = DatuBaseKontratua.SinResolver.crearUriSinResolver(id);
+                    url = Cons.UPDATE_SIN_URL;
+                    break;
+                default:
+                    return false;
+            }
+        }
+        Cursor c = resolver.query(uri, null, null, null, null);
+
+        VolleySingleton.getInstance(getContext()).addToRequestQueue(
+                new JsonObjectRequest(
+                        Request.Method.POST,
+                        url,
+                        Utils.deCursorAJSONObject(c, uri, token),
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    if (response.getString(Cons.ESTADO).equals(Cons.SUCCESS)) {
+                                        x = true;
+                                    }
+                                } catch (JSONException e){
+                                    e.printStackTrace();
+                                }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d(TAG, "Error Volley: " + error.getMessage());
+                            }
+                        }
+                ) {
+                    @Override
+                    public String getBodyContentType() {
+                        return "application/json; charset=utf-8" + getParamsEncoding();
+                    }
+
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String, String> headers = new HashMap<String, String>();
+                        headers.put("Content-Type", "application/json; charset=utf-8");
+                        headers.put("Accept", "application/json");
+                        return headers;
+                    }
+                }
+        );
+        return x;
+    }
+
+
+
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.d(TAG, "onConnected()...");
-        // Sincronizacion local y remota
     }
 
     @Override

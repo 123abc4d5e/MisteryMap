@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity
                     .build());
 
             String obj1 = DatuBaseKontratua.Objetos_mapa.generarIdObjetoMapa();
-            ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Objetos_mapa.URI_CONTENIDO)
+            ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Objetos_mapa.URI_CONTENT)
                     .withValue(DatuBaseKontratua.Objetos_mapa.ID, obj1)
                     .withValue(DatuBaseKontratua.Objetos_mapa.TIPO_ID, 1)
                     .withValue(DatuBaseKontratua.Objetos_mapa.LATITUD, 43.293999f)
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity
         new Prueba().execute(); // se hacen uns insert en segundo plano
 
         //PRUEBA DE UN QUERY
-        Cursor c = getContentResolver().query(DatuBaseKontratua.Objetos_mapa.URI_CONTENIDO, null, null, null, null);
+        Cursor c = getContentResolver().query(DatuBaseKontratua.Objetos_mapa.URI_CONTENT, null, null, null, null);
         String emaitza = "";
         Uri uri_detalles = null;
         if (c.moveToFirst()) {

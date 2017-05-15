@@ -6,22 +6,22 @@ package com.marluki.misterymap.model;
 
 public class Tipo {
 
-    String id;
+    int id;
     String nombre_tipo;
 
     public Tipo() {
     }
 
-    public Tipo(String id, String nombre_tipo) {
+    public Tipo(int id, String nombre_tipo) {
         this.id = id;
         this.nombre_tipo = nombre_tipo;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -36,7 +36,7 @@ public class Tipo {
     @Override
     public boolean equals(Object obj) {
         Tipo h = (Tipo) obj;
-        boolean b = !h.getId().equals(id) && h.getId() != null;
+        boolean b = h.getId() != id && h.getId() != 0;
         boolean b1 = !h.getNombre_tipo().equals(nombre_tipo) && h.getNombre_tipo() != null;
 
         if (b || b1) return false;

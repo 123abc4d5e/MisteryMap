@@ -9,7 +9,7 @@ import java.util.Comparator;
 public class ObjetoMapa implements Comparator<ObjetoMapa> {
 
     private String id;
-    private String tipo_id;
+    private int tipo_id;
     private Float latitud;
     private Float longitud;
     private String usuario_id;
@@ -20,7 +20,7 @@ public class ObjetoMapa implements Comparator<ObjetoMapa> {
 
     }
 
-    public ObjetoMapa(String id, String tipo_id, Float latitud, Float longitud, String usuario_id, String nombre_objeto, String detalles) {
+    public ObjetoMapa(String id, int tipo_id, Float latitud, Float longitud, String usuario_id, String nombre_objeto, String detalles) {
         this.id = id;
         this.tipo_id = tipo_id;
         this.latitud = latitud;
@@ -38,11 +38,11 @@ public class ObjetoMapa implements Comparator<ObjetoMapa> {
         this.id = id;
     }
 
-    public String getTipo_id() {
+    public int getTipo_id() {
         return tipo_id;
     }
 
-    public void setTipo_id(String tipo_id) {
+    public void setTipo_id(int tipo_id) {
         this.tipo_id = tipo_id;
     }
 
@@ -95,7 +95,7 @@ public class ObjetoMapa implements Comparator<ObjetoMapa> {
     public boolean equals(Object obj) {
         ObjetoMapa o = (ObjetoMapa)obj;
         boolean b = !o.getId().equals(id) && o.getId() != null;
-        boolean b1 = !o.getTipo_id().equals(tipo_id) && o.getTipo_id() != null;
+        boolean b1 = o.getTipo_id() != tipo_id && o.getTipo_id() != 0;
         boolean b2 = o.getLatitud() != latitud && o.getLatitud() != null;
         boolean b3 = o.getLongitud() != longitud && o.getLongitud() != null;
         boolean b4 = !o.getUsuario_id().equals(usuario_id) && o.getUsuario_id() != null;

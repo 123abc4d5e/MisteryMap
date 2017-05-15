@@ -24,6 +24,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.marluki.misterymap.sync.SyncHelper;
@@ -76,7 +78,11 @@ public class SignInResolutionActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_RESOLUTION && resultCode == RESULT_OK) {
             Log.d(TAG, "Resolution OK");
-            SyncHelper.initializeSync(getApplicationContext());
+
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            String token = result.getSignInAccount().getIdToken();
+
+            SyncHelper.initializeSync(getApplicationContext(), token);
         }
 
         if (mErrorDialog.isShowing()) {

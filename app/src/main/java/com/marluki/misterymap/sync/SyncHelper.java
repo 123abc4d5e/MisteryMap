@@ -5,17 +5,34 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SyncRequest;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.marluki.misterymap.R;
+import com.marluki.misterymap.model.Usuario;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
+import com.marluki.misterymap.ui.SignInActivity;
+import com.marluki.misterymap.utils.Cons;
+import com.marluki.misterymap.utils.Utils;
+import com.marluki.misterymap.volley.VolleySingleton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by charl on 12/05/2017.
@@ -39,10 +56,10 @@ public class SyncHelper {
      * @param context
      * @return
      */
-    public static boolean initializeSync(Context context) {
+    public static boolean initializeSync(Context context, String token) {
         Account syncAccount = getSyncAccount(context);
         if (syncAccount != null) {
-            onAccountCreated(context,syncAccount);
+            onAccountCreated(context,syncAccount, token);
             Log.v(TAG, "Syncing initialized");
             return true;
         }
@@ -64,13 +81,13 @@ public class SyncHelper {
        Account[] accounts = AccountManager.get(context)
                .getAccountsByType(context.getString(R.string.sync_account_type));
        if (accounts.length==0) {
-           Log.d(TAG, "Ez daude google-eko konturik!   MOLTO RARUNO->pa eso pillate un ipone!!");
+           Log.d(TAG, "Ez daude google-eko konturik!");
            return null;
        }
        return accounts[0];
     }
 
-    private static void onAccountCreated(Context context, Account newAccount) {
+    private static void onAccountCreated(Context context, Account newAccount, String token) {
         /*
          * Sistemari informatzen dio kontu honek sinkronizazioa honartzen dula
          */
@@ -84,7 +101,13 @@ public class SyncHelper {
         /*
          * Sinkronizazioa hasi
          */
+        if(TextUtils.isEmpty(token))
         syncNow(context);
+        else {
+            Bundle extras = new Bundle();
+            extras.putString("token", token);
+            syncNow(context, extras);
+        }
     }
 
     /**
@@ -154,6 +177,99 @@ public class SyncHelper {
         ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
+    public static void insertUser(final Context context,final Usuario usuario, final String token) {
+        JSONObject object = new JSONObject();
+        JSONObject postData = new JSONObject();
+        try {
+            object.put(DatuBaseKontratua.Usuarios.ID, usuario.getId());
+            object.put(DatuBaseKontratua.Usuarios.NOMBRE, usuario.getNombre());
+            object.put(DatuBaseKontratua.Usuarios.FOTO, usuario.getFoto());
+
+            postData.put("token", token);
+            postData.put("datos", object);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        VolleySingleton.getInstance(context).addToRequestQueue(
+                new JsonObjectRequest(
+                        Request.Method.POST,
+                        Cons.INSERT_USER_URL,
+                        postData,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                String estado = "";
+                                String mensaje = "";
+                                try {
+                                    estado = response.getString(Cons.ESTADO);
+                                    mensaje = response.getString(Cons.MENSAJE);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                switch (estado) {
+                                    case Cons.SUCCESS:
+                                        Log.i(TAG, mensaje);
+                                        break;
+                                    case Cons.FAILED:
+                                        Log.i(TAG, mensaje);
+                                        break;
+                                }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.i(TAG, error.getMessage());
+                                insertUser(context, usuario, token);
+                            }
+                        }
+                )
+        );
+    }
+
+    public static void deleteUser(final Context context, final String id, final String token) {
+        ContentResolver resolver = context.getContentResolver();
+        Uri uri = DatuBaseKontratua.Usuarios.crearUriUsuario(id);
+        Cursor c = resolver.query(uri, null, null, null, null);
+
+        VolleySingleton.getInstance(context).addToRequestQueue(
+                new JsonObjectRequest(
+                        Request.Method.POST,
+                        Cons.DELETE_USER_URL,
+                        Utils.deCursorAJSONObject(c, uri, token),
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                String estado = "";
+                                String mensaje = "";
+                                try {
+                                    estado = response.getString(Cons.ESTADO);
+                                    mensaje = response.getString(Cons.MENSAJE);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                switch (estado) {
+                                    case Cons.SUCCESS:
+                                        Log.i(TAG, mensaje);
+                                        context.startActivity(new Intent(context, SignInActivity.class));
+                                        break;
+                                    case Cons.FAILED:
+                                        Log.i(TAG, mensaje);
+                                        break;
+                                }
+
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                deleteUser(context, id, token);
+                            }
+                        }
+                )
+        );
     }
 
 }

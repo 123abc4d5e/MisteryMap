@@ -1,9 +1,7 @@
 package com.marluki.misterymap.provider;
 
 import android.content.ContentResolver;
-import android.content.UriMatcher;
 import android.net.Uri;
-import android.provider.BaseColumns;
 
 import java.util.UUID;
 
@@ -27,6 +25,8 @@ public class DatuBaseKontratua {
 
         String ESTADO = "estado";
         String PENDIENTE_INSERCION = "pendiente_insercion";
+        String PENDIENTE_ACTUALIZACION = "pendiente_actualizacion";
+        String PENDIENTE_ELIMINACION = "pendiente_eliminacion";
     }
 
     interface ColumnasOvnis {
@@ -62,6 +62,8 @@ public class DatuBaseKontratua {
 
         String ESTADO = "estado";
         String PENDIENTE_INSERCION = "pendiente_insercion";
+        String PENDIENTE_ACTUALIZACION = "pendiente_actualizacion";
+        String PENDIENTE_ELIMINACION = "pendiente_eliminacion";
     }
 
     interface ColumnasPsicofonia {
@@ -73,6 +75,8 @@ public class DatuBaseKontratua {
 
         String ESTADO = "estado";
         String PENDIENTE_INSERCION = "pendiente_insercion";
+        String PENDIENTE_ACTUALIZACION = "pendiente_actualizacion";
+        String PENDIENTE_ELIMINACION = "pendiente_eliminacion";
     }
 
     interface ColumnasTipo {
@@ -86,7 +90,7 @@ public class DatuBaseKontratua {
         String FOTO = "foto";
 
         String ESTADO = "estado";
-        String PENDIENTE_INSERCION = "pendiente_insercion";
+        String PENDIENTE_ACTUALIZACION = "pendiente_actualizacion";
     }
 
     interface ColumnasFotos {
@@ -98,6 +102,8 @@ public class DatuBaseKontratua {
 
         String ESTADO = "estado";
         String PENDIENTE_INSERCION = "pendiente_insercion";
+        String PENDIENTE_ACTUALIZACION = "pendiente_actualizacion";
+        String PENDIENTE_ELIMINACION = "pendiente_eliminacion";
     }
     /**
      * Content provider-aren autoritatea
@@ -181,7 +187,7 @@ public class DatuBaseKontratua {
         public static final String NOMBRE_USUARIO_FILTRO = "usuario.nombre";
         public static final String TIPO_FILTRO = "tipo.nombre";
 
-        public static final Uri URI_CONTENIDO =
+        public static final Uri URI_CONTENT =
                 URI_BASE.buildUpon().appendPath(RUTA_OBJEKTUAK_MAPA).build();
 
         /**
@@ -197,40 +203,40 @@ public class DatuBaseKontratua {
          * @return
          */
         public static Uri crearUriObjetoMapa(String id) {
-            return URI_CONTENIDO.buildUpon().appendPath(id).build();
+            return URI_CONTENT.buildUpon().appendPath(id).build();
         }
 
         public static Uri crearUriParaOvni(String id) {
-            return URI_CONTENIDO.buildUpon().appendPath(id).appendPath("ovnis").build();
+            return URI_CONTENT.buildUpon().appendPath(id).appendPath("ovnis").build();
         }
 
         public static Uri crearUriParaFanstama(String id) {
-            return URI_CONTENIDO.buildUpon().appendPath(id).appendPath("fantasmas").build();
+            return URI_CONTENT.buildUpon().appendPath(id).appendPath("fantasmas").build();
         }
 
 
         public static Uri crearUriParaHistorico(String id) {
-            return URI_CONTENIDO.buildUpon().appendPath(id).appendPath("historicos").build();
+            return URI_CONTENT.buildUpon().appendPath(id).appendPath("historicos").build();
         }
 
 
         public static Uri crearUriParaSinReslover(String id) {
-            return URI_CONTENIDO.buildUpon().appendPath(id).appendPath("sin_resolver").build();
+            return URI_CONTENT.buildUpon().appendPath(id).appendPath("sin_resolver").build();
         }
 
 
         public static Uri crearUriParaComentario(String id) {
-            return URI_CONTENIDO.buildUpon().appendPath(id).appendPath("comentarios").build();
+            return URI_CONTENT.buildUpon().appendPath(id).appendPath("comentarios").build();
         }
 
 
         public static Uri crearUriParaFoto(String id) {
-            return URI_CONTENIDO.buildUpon().appendPath(id).appendPath("fotos").build();
+            return URI_CONTENT.buildUpon().appendPath(id).appendPath("fotos").build();
         }
 
 
         public static Uri crearUriParaPsicofonia(String id) {
-            return URI_CONTENIDO.buildUpon().appendPath(id).appendPath("psicofonias").build();
+            return URI_CONTENT.buildUpon().appendPath(id).appendPath("psicofonias").build();
         }
 
 
