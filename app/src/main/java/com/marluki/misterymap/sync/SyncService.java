@@ -19,7 +19,7 @@ public class SyncService extends Service {
          */
         synchronized (ssyncAdapterLock) {
             if (syncAdapter == null) {
-                ssyncAdapterLock = new SyncAdapter(this, true);
+                syncAdapter = new SyncAdapter(this, true);
             }
         }
 

@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -82,7 +83,7 @@ public class SignInResolutionActivity extends AppCompatActivity {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             String token = result.getSignInAccount().getIdToken();
 
-            SyncHelper.initializeSync(getApplicationContext(), token);
+            //SyncHelper.initializeSync(getApplicationContext(), token);
         }
 
         if (mErrorDialog.isShowing()) {
@@ -90,5 +91,4 @@ public class SignInResolutionActivity extends AppCompatActivity {
         }
         finish();
     }
-
 }

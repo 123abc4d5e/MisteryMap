@@ -1,15 +1,20 @@
 package com.marluki.misterymap;
 
-import android.content.ContentProviderOperation;
+import android.Manifest;
 import android.content.ContentResolver;
-import android.content.OperationApplicationException;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,72 +24,47 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.Toast;
 
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.marluki.misterymap.model.ObjetoMapa;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
+import com.marluki.misterymap.sync.SyncHelper;
+import com.marluki.misterymap.ui.BlankFragment;
+import com.marluki.misterymap.ui.FirstMapFragment;
+import com.marluki.misterymap.ui.InsertActivity;
+import com.marluki.misterymap.view.GoogleApi;
+import com.marluki.misterymap.view.Map;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, AdapterView.OnClickListener, BlankFragment.OnFragmentInteractionListener {
 
-    public class Prueba extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
 
-            ContentResolver r = getContentResolver();
-            ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+    private FirstMapFragment mFirstMapFragment;
+    private BlankFragment mBlankFragment;
+    private GoogleApi mGoogleApi;
+    private Map mMap;
+    private boolean mapStyleisLight = true;
+    private Marker longMarker;
+    private ContentResolver resolver;
+    private GoogleMap googleMap;
+    private ArrayList<Marker> markers;
 
-            ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Tipos.URI_CONTENT)
-                    .withValue(DatuBaseKontratua.Tipos.ID, 1)
-                    .withValue(DatuBaseKontratua.Tipos.NOMBRE_TIPO, "Ovni")
-                    .build());
-            ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Tipos.URI_CONTENT)
-                    .withValue(DatuBaseKontratua.Tipos.ID, 2)
-                    .withValue(DatuBaseKontratua.Tipos.NOMBRE_TIPO, "Fantasma")
-                    .build());
-            ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Tipos.URI_CONTENT)
-                    .withValue(DatuBaseKontratua.Tipos.ID, 3)
-                    .withValue(DatuBaseKontratua.Tipos.NOMBRE_TIPO, "Historico")
-                    .build());
-            ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Tipos.URI_CONTENT)
-                    .withValue(DatuBaseKontratua.Tipos.ID, 4)
-                    .withValue(DatuBaseKontratua.Tipos.NOMBRE_TIPO, "Sin Resolver")
-                    .build());
-
-            String usuario1 = DatuBaseKontratua.Usuarios.generarIdUsuario();
-            ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Usuarios.URI_CONTENT)
-                    .withValue(DatuBaseKontratua.Usuarios.ID, usuario1)
-                    .withValue(DatuBaseKontratua.Usuarios.NOMBRE, "Fulanito")
-                    .withValue(DatuBaseKontratua.Usuarios.FOTO, "huerfanito@gmail.com")
-                    .build());
-
-            String obj1 = DatuBaseKontratua.Objetos_mapa.generarIdObjetoMapa();
-            ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Objetos_mapa.URI_CONTENT)
-                    .withValue(DatuBaseKontratua.Objetos_mapa.ID, obj1)
-                    .withValue(DatuBaseKontratua.Objetos_mapa.TIPO_ID, 1)
-                    .withValue(DatuBaseKontratua.Objetos_mapa.LATITUD, 43.293999f)
-                    .withValue(DatuBaseKontratua.Objetos_mapa.LONGITUD, -1.988579f)
-                    .withValue(DatuBaseKontratua.Objetos_mapa.USUARIO_ID, usuario1)
-                    .withValue(DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO, "3 Ovnis en Donosti")
-                    .withValue(DatuBaseKontratua.Objetos_mapa.DETALLES, "3 Ovnis vistos en las inmediaciones de San Sebastian.")
-                    .build());
-
-            ops.add(ContentProviderOperation.newInsert(DatuBaseKontratua.Objetos_mapa.crearUriParaOvni(obj1))
-                    .withValue(DatuBaseKontratua.Ovnis.DIA, "24-04-2017")
-                    .withValue(DatuBaseKontratua.Ovnis.HORA, "15:45:00")
-                    .build());
-
-            try {
-                r.applyBatch(DatuBaseKontratua.AUTHORITY, ops);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            } catch (OperationApplicationException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    }
+    private FloatingActionButton fabOvni;
+    private FloatingActionButton fabFantasma;
+    private FloatingActionButton fabHistorico;
+    private FloatingActionButton fabSinResolver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,65 +72,118 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        resolver = getContentResolver();
+        markers = new ArrayList<Marker>();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        fabOvni = (FloatingActionButton) findViewById(R.id.fabOvni);
+        fabFantasma = (FloatingActionButton)findViewById(R.id.fabFantasma);
+        fabHistorico = (FloatingActionButton)findViewById(R.id.fabHistorico);
+        fabSinResolver = (FloatingActionButton)findViewById(R.id.fabSinResolver);
+
+        fabOvni.setOnClickListener(this);
+        fabFantasma.setOnClickListener(this);
+        fabHistorico.setOnClickListener(this);
+        fabSinResolver.setOnClickListener(this);
+
+        UpdateUI();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        getApplicationContext().deleteDatabase("mistery.db");
-        new Prueba().execute(); // se hacen uns insert en segundo plano
+        mFirstMapFragment = FirstMapFragment.newInstance();
+        mBlankFragment = BlankFragment.newInstance();
 
-        //PRUEBA DE UN QUERY
-        Cursor c = getContentResolver().query(DatuBaseKontratua.Objetos_mapa.URI_CONTENT, null, null, null, null);
-        String emaitza = "";
-        Uri uri_detalles = null;
-        if (c.moveToFirst()) {
-            do {
-                for (int i = 0; i < c.getColumnNames().length; i++) {
-                    emaitza += " | " + c.getColumnName(i) + ": " + c.getString(i);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.map, mFirstMapFragment)
+                .commit();
+
+        mGoogleApi = new GoogleApi(this, this, this);
+        //mMap = new Map(this, mGoogleApi);
+
+        //mMap.getMapAsync(mFirstMapFragment);
+        mFirstMapFragment.getMapAsync(this);
+    }
+
+    @Override
+    public void onMapReady(final GoogleMap googleMap) {
+        this.googleMap = googleMap;
+        if(mapStyleisLight)
+            googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getApplicationContext(), R.raw.formato_mapa_light));
+        else
+            googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getApplicationContext(), R.raw.formato_mapa_dark));
+
+        if(mGoogleApi.getLastKnownLocation()!=null) {
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mGoogleApi.getLastKnownLocation().getLatitude(), mGoogleApi.getLastKnownLocation().getLongitude()), 5));
+            googleMap.animateCamera(CameraUpdateFactory.zoomTo(12), 200, null);
+        }
+        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if (longMarker != null) {
+                    longMarker.remove();
+                    longMarker = null;
+                } else {
+                    if (mapStyleisLight) {
+                        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getApplicationContext(), R.raw.formato_mapa_light));
+                    } else {
+                        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getApplicationContext(), R.raw.formato_mapa_dark));
+                    }
+                    mapStyleisLight = !mapStyleisLight;
                 }
-                uri_detalles = DatuBaseKontratua.Objetos_mapa.crearUriParaOvni(c.getString(1));
-            } while (c.moveToNext());
+                UpdateUI();
 
-        }
-
-        Cursor e = getContentResolver().query(uri_detalles, null, null, null, null);
-
-        while (e.moveToNext()) {
-            emaitza += "\n\nRESPUESTA CON TABLA OVNI\n";
-            for (int i = 0; i < e.getColumnNames().length; i++) {
-                emaitza += " | " + e.getColumnName(i) + ": " + e.getString(i);
             }
-        }
-        /*
-         * colocamos el string para ver las columnas y valores que ha devuelto cada query en el cursor
-         * y añadimos el token recivido desde SingInActivity
-         */
-        emaitza += "\n\n\n" + getIntent().getExtras().getString("token", "");
-        ((TextView) findViewById(R.id.txtAlgo)).setText(emaitza);
+        });
+        googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                if (longMarker != null)
+                    longMarker.remove();
+                longMarker = googleMap.addMarker(new MarkerOptions().title("Nueva posición").position(latLng).draggable(true));
+                UpdateUI();
+            }
+        });
+
+        LoadMarkers loadMarkers = new LoadMarkers();
+        loadMarkers.execute();
+
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Log.d("onMarkerClick", "Click en marker " + marker.getTitle());
+                FragmentManager fm = getSupportFragmentManager();
+                FragmentTransaction transaction = fm.beginTransaction();
+                transaction.setCustomAnimations(R.anim.slide_gora, R.anim.slide_behera, R.anim.pop_enter, R.anim.pop_exit);
+                transaction.replace(R.id.fragment2, mBlankFragment, "fragmentA");
+                transaction.addToBackStack(null);
+                transaction.commit();
+
+                return true;
+            }
+        });
     }
 
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag("fragmentA");
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (longMarker != null) {
+                longMarker.remove();
+                longMarker = null;
+                UpdateUI();
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 
@@ -193,11 +226,187 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
+            SyncHelper.syncNow(getApplicationContext(), true);
 
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.fabOvni:
+                startActivity(InsertActivity.newStartIntent(getApplicationContext(), 1,
+                        getIntent().getStringExtra(DatuBaseKontratua.Usuarios.ID),
+                        longMarker.getPosition().latitude, longMarker.getPosition().longitude));
+                break;
+            case R.id.fabFantasma:
+                startActivity(InsertActivity.newStartIntent(getApplicationContext(), 2,
+                        getIntent().getStringExtra(DatuBaseKontratua.Usuarios.ID),
+                        longMarker.getPosition().latitude, longMarker.getPosition().longitude));
+                break;
+            case R.id.fabHistorico:
+                startActivity(InsertActivity.newStartIntent(getApplicationContext(), 3,
+                        getIntent().getStringExtra(DatuBaseKontratua.Usuarios.ID),
+                        longMarker.getPosition().latitude, longMarker.getPosition().longitude));
+                break;
+            case R.id.fabSinResolver:
+                startActivity(InsertActivity.newStartIntent(getApplicationContext(), 4,
+                        getIntent().getStringExtra(DatuBaseKontratua.Usuarios.ID),
+                        longMarker.getPosition().latitude, longMarker.getPosition().longitude));
+                break;
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 60) {
+            if (grantResults.length == 1
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                //Permiso concedido
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                Location lastLocation =
+                        LocationServices.FusedLocationApi.getLastLocation(mGoogleApi.getGoogleApiClient());
+
+                //mMap.addMarkerHistorico(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), "Ultima Posicion Conocida");
+                //mMap.moveCamera(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 12);
+
+
+                if(lastLocation != null)
+                    mGoogleApi.updateLocation(lastLocation);
+
+            } else {
+                //Permiso denegado:
+                //Deberíamos deshabilitar toda la funcionalidad relativa a la localización.
+
+                Toast.makeText(this, "Permiso Denegado!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    protected void onStart() {
+
+        mGoogleApi.connect();
+        super .onStart();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mGoogleApi.disconnect();
+    }
+
+    private void UpdateUI () {
+        if (longMarker != null) {
+            fabOvni.setVisibility(View.VISIBLE);
+            fabFantasma.setVisibility(View.VISIBLE);
+            fabHistorico.setVisibility(View.VISIBLE);
+            fabSinResolver.setVisibility(View.VISIBLE);
+        } else {
+            fabOvni.setVisibility(View.INVISIBLE);
+            fabFantasma.setVisibility(View.INVISIBLE);
+            fabHistorico.setVisibility(View.INVISIBLE);
+            fabSinResolver.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    public class LoadMarkers extends AsyncTask<Void, Void, Void> {
+        Cursor c;
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            c = resolver.query(DatuBaseKontratua.Objetos_mapa.URI_CONTENT, null, null, null, null);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if(c.getCount() > 0) {
+                while (c.moveToNext()) {
+                    Marker marker = null;
+                    ObjetoMapa objetoMapa = new ObjetoMapa(
+                            c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID)),
+                            c.getInt(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.TIPO_ID)),
+                            c.getFloat(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LATITUD)),
+                            c.getFloat(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LONGITUD)),
+                            c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.USUARIO_ID)),
+                            c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO)),
+                            c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.DETALLES)),
+                            c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.PAIS)),
+                            c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.CIUDAD))
+                    );
+
+                    switch (objetoMapa.getTipo_id()) {
+                        case 1:
+                            marker = addMarkerOvni(objetoMapa);
+                            break;
+                        case 2:
+                            marker = addMarkerFantasma(objetoMapa);
+                            break;
+                        case 3:
+                            marker = addMarkerHistorico(objetoMapa);
+                            break;
+                        case 4:
+                            marker = addMarkerSinResolver(objetoMapa);
+                            break;
+                    }
+                    marker.setTag(objetoMapa);
+                    markers.add(marker);
+                }
+            }
+        }
+
+        public Marker addMarkerOvni(ObjetoMapa objeto)
+        {
+            return googleMap.addMarker(new MarkerOptions().position(new LatLng(objeto.getLatitud(), objeto.getLongitud())).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker_ovni)).title(objeto.getNombre_objeto()).draggable(false));
+
+        }
+
+        public Marker addMarkerHistorico(ObjetoMapa objeto)
+        {
+            return googleMap.addMarker(new MarkerOptions().position(new LatLng(objeto.getLatitud(), objeto.getLongitud())).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker_historico)).title(objeto.getNombre_objeto()).draggable(false));
+        }
+
+        public Marker addMarkerFantasma(ObjetoMapa objeto)
+        {
+            return googleMap.addMarker(new MarkerOptions().position(new LatLng(objeto.getLatitud(), objeto.getLongitud())).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker_fantasma)).title(objeto.getNombre_objeto()).draggable(false));
+        }
+
+        public Marker addMarkerSinResolver(ObjetoMapa objeto)
+        {
+            return googleMap.addMarker(new MarkerOptions().position(new LatLng(objeto.getLatitud(), objeto.getLongitud())).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker_sin_resolver)).title(objeto.getNombre_objeto()).draggable(false));
+        }
     }
 }

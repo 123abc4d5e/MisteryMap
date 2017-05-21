@@ -17,11 +17,11 @@ import org.json.JSONObject;
 public class Utils {
 
     public static JSONObject deCursorAJSONObject(Cursor c, Uri uri, String token) {
-        String id, tipo_id, usuario_id, nombre_objeto, objeto_id, fecha, dia, hora, url;
+        String id, tipo_id, usuario_id, nombre_objeto, objeto_id, fecha, dia, url;
+        int visto, fake;
         JSONObject objetos = new JSONObject();
-        JSONObject object = new JSONObject();
         try {
-            object.put("token", token);
+            objetos.put("token", token);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -34,6 +34,8 @@ public class Utils {
                 usuario_id = c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.USUARIO_ID));
                 nombre_objeto = c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO));
                 String detalles = c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.DETALLES));
+                String pais = c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.PAIS));
+                String ciudad = c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.CIUDAD));
 
                 try {
                     objetos.put(DatuBaseKontratua.Objetos_mapa.ID, id);
@@ -43,27 +45,27 @@ public class Utils {
                     objetos.put(DatuBaseKontratua.Objetos_mapa.USUARIO_ID, usuario_id);
                     objetos.put(DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO, nombre_objeto);
                     objetos.put(DatuBaseKontratua.Objetos_mapa.DETALLES, detalles);
+                    objetos.put(DatuBaseKontratua.Objetos_mapa.PAIS, pais);
+                    objetos.put(DatuBaseKontratua.Objetos_mapa.CIUDAD, ciudad);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 break;
             case MisteryProvider.OVNIS:
                 objeto_id = c.getString(c.getColumnIndex(DatuBaseKontratua.Ovnis.OBJETO_ID));
-                dia = c.getString(c.getColumnIndex(DatuBaseKontratua.Ovnis.DIA));
-                hora = c.getString(c.getColumnIndex(DatuBaseKontratua.Ovnis.HORA));
+                fecha = c.getString(c.getColumnIndex(DatuBaseKontratua.Ovnis.FECHA));
 
                 try {
                     objetos.put(DatuBaseKontratua.Ovnis.OBJETO_ID, objeto_id);
-                    objetos.put(DatuBaseKontratua.Ovnis.DIA, dia);
-                    objetos.put(DatuBaseKontratua.Ovnis.HORA, hora);
+                    objetos.put(DatuBaseKontratua.Ovnis.FECHA, fecha);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 break;
             case MisteryProvider.FANTASMAS:
                 objeto_id = c.getString(c.getColumnIndex(DatuBaseKontratua.Fantasmas.OBJETO_ID));
-                int visto = c.getInt(c.getColumnIndex(DatuBaseKontratua.Fantasmas.VISTO));
-                int fake = c.getInt(c.getColumnIndex(DatuBaseKontratua.Fantasmas.FAKE));
+                visto = c.getInt(c.getColumnIndex(DatuBaseKontratua.Fantasmas.VISTO));
+                fake = c.getInt(c.getColumnIndex(DatuBaseKontratua.Fantasmas.FAKE));
 
                 try {
                     objetos.put(DatuBaseKontratua.Fantasmas.OBJETO_ID, objeto_id);
@@ -95,14 +97,59 @@ public class Utils {
                     e.printStackTrace();
                 }
                 break;
+            case MisteryProvider.OVNIS_ID:
+                objeto_id = c.getString(c.getColumnIndex(DatuBaseKontratua.Ovnis.OBJETO_ID));
+                fecha = c.getString(c.getColumnIndex(DatuBaseKontratua.Ovnis.FECHA));
+
+                try {
+                    objetos.put(DatuBaseKontratua.Ovnis.OBJETO_ID, objeto_id);
+                    objetos.put(DatuBaseKontratua.Ovnis.FECHA, fecha);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case MisteryProvider.FANTASMAS_ID:
+                objeto_id = c.getString(c.getColumnIndex(DatuBaseKontratua.Fantasmas.OBJETO_ID));
+                visto = c.getInt(c.getColumnIndex(DatuBaseKontratua.Fantasmas.VISTO));
+                fake = c.getInt(c.getColumnIndex(DatuBaseKontratua.Fantasmas.FAKE));
+
+                try {
+                    objetos.put(DatuBaseKontratua.Fantasmas.OBJETO_ID, objeto_id);
+                    objetos.put(DatuBaseKontratua.Fantasmas.VISTO, visto);
+                    objetos.put(DatuBaseKontratua.Fantasmas.FAKE, fake);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case MisteryProvider.HISTORICOS_ID:
+                objeto_id = c.getString(c.getColumnIndex(DatuBaseKontratua.Historicos.OBJETO_ID));
+                fecha = c.getString(c.getColumnIndex(DatuBaseKontratua.Historicos.FECHA));
+
+                try {
+                    objetos.put(DatuBaseKontratua.Historicos.OBJETO_ID, objeto_id);
+                    objetos.put(DatuBaseKontratua.Historicos.FECHA, fecha);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case MisteryProvider.SIN_RESOLVER_ID:
+                objeto_id = c.getString(c.getColumnIndex(DatuBaseKontratua.SinResolver.OBJETO_ID));
+                fecha = c.getString(c.getColumnIndex(DatuBaseKontratua.SinResolver.FECHA));
+
+                try {
+                    objetos.put(DatuBaseKontratua.SinResolver.OBJETO_ID, objeto_id);
+                    objetos.put(DatuBaseKontratua.SinResolver.FECHA, fecha);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
             case MisteryProvider.COMENTARIOS:
                 id = c.getString(c.getColumnIndex(DatuBaseKontratua.Comentarios.ID));
                 objeto_id = c.getString(c.getColumnIndex(DatuBaseKontratua.Comentarios.OBJETO_ID));
                 String comentario_id = c.getString(c.getColumnIndex(DatuBaseKontratua.Comentarios.COMENTARIO_ID));
                 String texto = c.getString(c.getColumnIndex(DatuBaseKontratua.Comentarios.TEXTO));
                 usuario_id = c.getString(c.getColumnIndex(DatuBaseKontratua.Comentarios.USUARIO_ID));
-                dia = c.getString(c.getColumnIndex(DatuBaseKontratua.Comentarios.DIA));
-                hora = c.getString(c.getColumnIndex(DatuBaseKontratua.Comentarios.HORA));
+                dia = c.getString(c.getColumnIndex(DatuBaseKontratua.Comentarios.FECHA));
 
                 try {
                     objetos.put(DatuBaseKontratua.Comentarios.ID, id);
@@ -110,8 +157,7 @@ public class Utils {
                     objetos.put(DatuBaseKontratua.Comentarios.COMENTARIO_ID, comentario_id);
                     objetos.put(DatuBaseKontratua.Comentarios.TEXTO, texto);
                     objetos.put(DatuBaseKontratua.Comentarios.USUARIO_ID, usuario_id);
-                    objetos.put(DatuBaseKontratua.Comentarios.DIA, dia);
-                    objetos.put(DatuBaseKontratua.Comentarios.HORA, hora);
+                    objetos.put(DatuBaseKontratua.Comentarios.FECHA, dia);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -163,15 +209,13 @@ public class Utils {
                     e.printStackTrace();
                 }
                 break;
+            default:
+                Log.d("Utils", "Uri desconocida: " + uri);
+                break;
 
         }
 
         Log.i("Cursor a JSONObject", String.valueOf(objetos));
-        try {
-            objetos.put("datos", object);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
         return objetos;
     }
 }

@@ -16,66 +16,68 @@ public class Cons {
      */
     private static final String PUERTO_HOST = "";
 
+    private static final String VERSION = "/MisteryMap_web/v1/web/";
+
     /**
      * Dirección IP de genymotion o AVD
      */
-    private static final String IP = "http://rasp.publicvm.com";
+    private static final String IP = "http://62.151.226.216" + PUERTO_HOST + VERSION;
 
     /**
      * URLs del Web Service
      */
-    public static final String GET_OBJ_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/obtener_gastos.php";
-    public static final String GET_ALL_OBJ_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String INSERT_OBJ_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String DELETE_OBJ_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String UPDATE_OBJ_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
+    public static final String GET_OBJ_URL = IP  + "Objetos/getById.php";
+    public static final String GET_ALL_OBJ_URL = IP + "Objetos/getAll.php";
+    public static final String INSERT_OBJ_URL = IP + "Objetos/insert.php";
+    public static final String DELETE_OBJ_URL = IP + "Objetos/delete.php";
+    public static final String UPDATE_OBJ_URL = IP + "Objetos/update.php";
 
-    public static final String GET_ALL_OVNI_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String GET_OVNI_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String UPDATE_OVNI_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String INSERT_OVNI_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
+    public static final String GET_ALL_OVNI_URL = IP + "Ovnis/getAll.php";
+    public static final String GET_OVNI_URL = IP + "Ovnis/getById.php";
+    public static final String UPDATE_OVNI_URL = IP + "Ovnis/update.php";
+    public static final String INSERT_OVNI_URL = IP + "Ovnis/insert.php";
 
-    public static final String GET_ALL_FANT_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String GET_FANT_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String UPDATE_FANT_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String INSERT_FANT_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
+    public static final String GET_ALL_FANT_URL = IP + "Fantasmas/getAll.php";
+    public static final String GET_FANT_URL = IP + "Fantasmas/getById.php";
+    public static final String UPDATE_FANT_URL = IP + "Fantasmas/update.php";
+    public static final String INSERT_FANT_URL = IP + "Fantasmas/insert.php";
 
-    public static final String GET_ALL_HIST_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String GET_HIST_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String UPDATE_HIST_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String INSERT_HIST_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
+    public static final String GET_ALL_HIST_URL = IP + "Historicos/getAll.php";
+    public static final String GET_HIST_URL = IP + "Historicos/getById.php";
+    public static final String UPDATE_HIST_URL = IP + "Historicos/update.php";
+    public static final String INSERT_HIST_URL = IP + "Historicos/insert.php";
 
-    public static final String GET_ALL_SIN_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String GET_SIN_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String UPDATE_SIN_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String INSERT_SIN_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
+    public static final String GET_ALL_SIN_URL = IP + "SinResolver/getAll.php";
+    public static final String GET_SIN_URL = IP + "SinResolver/getById.php";
+    public static final String UPDATE_SIN_URL = IP + "SinResolver/update.php";
+    public static final String INSERT_SIN_URL = IP + "SinResolver/insert.php";
 
-    public static final String GET_ALL_COMENT_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String GET_COMENT_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String INSERT_COMENT_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String UPDATE_COMENT_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String DELETE_COMENT_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
+    public static final String GET_ALL_COMENT_URL = IP + "Comentarios/getAll.php";
+    public static final String GET_COMENT_URL = IP + "Comentarios/getById.php";
+    public static final String INSERT_COMENT_URL = IP + "Comentarios/insert.php";
+    public static final String UPDATE_COMENT_URL = IP + "Comentarios/update.php";
+    public static final String DELETE_COMENT_URL = IP + "Comentarios/delete.php";
 
-    public static final String GET_ALL_FOTO_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String GET_FOTO_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String INSERT_FOTO_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String UPDATE_FOTO_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String DELETE_FOTO_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
+    public static final String GET_ALL_FOTO_URL = IP + "Fotos/getAll.php";
+    public static final String GET_FOTO_URL = IP + "Fotos/getById.php";
+    public static final String INSERT_FOTO_URL = IP + "Fotos/insert.php";
+    public static final String UPDATE_FOTO_URL = IP + "Fotos/update.php";
+    public static final String DELETE_FOTO_URL = IP + "Fotos/delete.php";
 
-    public static final String GET_ALL_PSICO_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String GET_PSICO_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String INSERT_PSICO_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String UPDATE_PSICO_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String DELETE_PSICO_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
+    public static final String GET_ALL_PSICO_URL = IP + "Psicofonias/getAll.php";
+    public static final String GET_PSICO_URL = IP + "Psicofonias/getById.php";
+    public static final String INSERT_PSICO_URL = IP + "Psicofonias/insert.php";
+    public static final String UPDATE_PSICO_URL = IP + "Psicofonias/update.php";
+    public static final String DELETE_PSICO_URL = IP + "Psicofonias/delete.php";
 
-    public static final String GET_ALL_USER_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String GET_USER_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String INSERT_USER_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String UPDATE_USER_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
-    public static final String DELETE_USER_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
+    public static final String GET_ALL_USER_URL = IP + "Usuarios/getAll.php";
+    public static final String GET_USER_URL = IP + "Usuarios/getById.php";
+    public static final String INSERT_USER_URL = IP + "Usuarios/insert.php";
+    public static final String UPDATE_USER_URL = IP + "Usuarios/update.php";
+    public static final String DELETE_USER_URL = IP + "Usuarios/delete.php";
 
 
-    public static final String GET_ALL_TYPE_URL = IP + PUERTO_HOST + "/Crunch%20Expenses/web/insertar_gasto.php";
+    public static final String GET_ALL_TYPE_URL = IP + "Tipos/getAll.php";
 
 
     public static final String[] GET_URLS = new String[]{
@@ -92,7 +94,6 @@ public class Cons {
     };
 
     public static final String[] INSERT_URLS = new String[]{
-            INSERT_USER_URL,
             INSERT_OBJ_URL,
             INSERT_COMENT_URL,
             INSERT_PSICO_URL,
@@ -166,6 +167,9 @@ public class Cons {
     public static final int ID_INSERT = 1;
     public static final int ID_UPDATE = 2;
     public static final int ID_DELETE = 3;
+
+    public static final String createUser = "createUser";
+    public static final String deleteUser = "deleteUser";
 
 
 }

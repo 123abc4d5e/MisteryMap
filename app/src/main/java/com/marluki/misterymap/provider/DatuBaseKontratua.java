@@ -22,6 +22,8 @@ public class DatuBaseKontratua {
         String USUARIO_ID = "usuario_id";
         String NOMBRE_OBJETO = "nombre_objeto";
         String DETALLES = "detalles";
+        String PAIS = "pais";
+        String CIUDAD = "ciudad";
 
         String ESTADO = "estado";
         String PENDIENTE_INSERCION = "pendiente_insercion";
@@ -31,8 +33,7 @@ public class DatuBaseKontratua {
 
     interface ColumnasOvnis {
         String OBJETO_ID = "objeto_id";
-        String DIA = "dia";
-        String HORA = "hora";
+        String FECHA = "fecha";
     }
 
     interface ColumnasFantasmas {
@@ -42,7 +43,7 @@ public class DatuBaseKontratua {
     }
 
     interface ColumnasHistorico {
-        String OBJETO_ID = "id";
+        String OBJETO_ID = "objeto_id";
         String FECHA = "fecha";
     }
 
@@ -57,8 +58,7 @@ public class DatuBaseKontratua {
         String USUARIO_ID = "usuario_id";
         String TEXTO = "texto";
         String COMENTARIO_ID = "comentario_id";
-        String DIA = "dia";
-        String HORA = "hora";
+        String FECHA = "fecha";
 
         String ESTADO = "estado";
         String PENDIENTE_INSERCION = "pendiente_insercion";
@@ -69,7 +69,7 @@ public class DatuBaseKontratua {
     interface ColumnasPsicofonia {
         String ID = "id";
         String NOMBRE_PSICOFONIA = "nombre_psicofonia";
-        String OBJETO_ID = "objetp_id";
+        String OBJETO_ID = "objeto_id";
         String URL = "url";
         String USUARIO_ID = "usuario_id";
 
@@ -251,7 +251,7 @@ public class DatuBaseKontratua {
      * Ovni taula
      */
     public static class Ovnis implements ColumnasOvnis {
-        public static final Uri URI_CONTENIDO =
+        public static final Uri URI_CONTENT =
             URI_BASE.buildUpon().appendPath(RUTA_OVNIAK).build();
 
         /**
@@ -267,7 +267,7 @@ public class DatuBaseKontratua {
          *
          */
         public static Uri crearUriOvni(String id) {
-            return URI_CONTENIDO.buildUpon().appendPath(id).build();
+            return URI_CONTENT.buildUpon().appendPath(id).build();
         }
     }
 
@@ -298,7 +298,7 @@ public class DatuBaseKontratua {
          *
          *
          */
-        public static String obtenerIdHistoico(Uri uri) {return uri.getLastPathSegment();}
+        public static String obtenerIdHistorico(Uri uri) {return uri.getLastPathSegment();}
 
         /**
          *

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import static com.marluki.misterymap.provider.DatuBaseKontratua.*;
 
@@ -56,20 +57,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "%s TEXT UNIQUE NOT NULL,%s INT NOT NULL %s,%s REAL NOT NULL," +
-                "%s REAL NOT NULL,%s TEXT NOT NULL %s, %s TEXT NOT NULL, %s TEXT, %s INTEGER NOT NULL DEFAULT %s," +
-                        "%s INTEGER NOT NULL DEFAULT 1, %s INTEGER NOT NULL DEFAULT 0, %s INTEGER NOT NULL DEFAULT 0)",
+                "%s TEXT UNIQUE NOT NULL,%s INTEGER NOT NULL %s,%s REAL NOT NULL," +
+                "%s REAL NOT NULL,%s TEXT NOT NULL %s, %s TEXT NOT NULL, %s TEXT, " +
+                "%s TEXT DEFAULT NULL, %s TEXT DEFAULT NULL, %s INTEGER NOT NULL DEFAULT %s," +
+                "%s INTEGER NOT NULL DEFAULT 1, %s INTEGER NOT NULL DEFAULT 0, %s INTEGER NOT NULL DEFAULT 0)",
                 Tablas.OBJETO_MAPA, BaseColumns._ID, Objetos_mapa.ID,
                 Objetos_mapa.TIPO_ID, referencias.TIPO_ID,
                 Objetos_mapa.LATITUD, Objetos_mapa.LONGITUD,
                 Objetos_mapa.USUARIO_ID, referencias.USUARIO_ID,
                 Objetos_mapa.NOMBRE_OBJETO, Objetos_mapa.DETALLES,
+                Objetos_mapa.PAIS, Objetos_mapa.CIUDAD,
                 Objetos_mapa.ESTADO, ESTADO_OK, Objetos_mapa.PENDIENTE_INSERCION,
                 Objetos_mapa.PENDIENTE_ACTUALIZACION, Objetos_mapa.PENDIENTE_ELIMINACION));
 
+
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "%s TEXT UNIQUE NOT NULL %s,%s TEXT NOT NULL,%s TEXT NOT NULL)",
-                Tablas.OVNI, BaseColumns._ID, Ovnis.OBJETO_ID, referencias.OBJETO_ID, Ovnis.DIA, Ovnis.HORA));
+                        "%s TEXT UNIQUE NOT NULL %s,%s TEXT NOT NULL)",
+                Tablas.OVNI, BaseColumns._ID, Ovnis.OBJETO_ID, referencias.OBJETO_ID, Ovnis.FECHA));
 
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
                         "%s TEXT UNIQUE NOT NULL %s,%s INTEGER NOT NULL,%s INTEGER NOT NULL)",
@@ -85,12 +89,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
                         "%s TEXT UNIQUE NOT NULL,%s TEXT NOT NULL %s,%s TEXT NOT NULL %s," +
-                        "%s TEXT NOT NULL,%s TEXT DEFAULT NULL, %s TEXT NOT NULL, %s TEXT NOT NULL, %s INTEGER NOT NULL DEFAULT %s," +
+                        "%s TEXT NOT NULL,%s TEXT DEFAULT NULL, %s TEXT NOT NULL, %s INTEGER NOT NULL DEFAULT %s," +
                         "%s INTEGER NOT NULL DEFAULT 1, %s INTEGER NOT NULL DEFAULT 0, %s INTEGER NOT NULL DEFAULT 0)",
                 Tablas.COMENTARIO, BaseColumns._ID, Comentarios.ID,
                 Comentarios.OBJETO_ID, referencias.OBJETO_ID,
                 Comentarios.USUARIO_ID, referencias.USUARIO_ID,
-                Comentarios.TEXTO, Comentarios.COMENTARIO_ID, Comentarios.DIA, Comentarios.HORA,
+                Comentarios.TEXTO, Comentarios.COMENTARIO_ID, Comentarios.FECHA,
                 Comentarios.ESTADO, ESTADO_OK, Comentarios.PENDIENTE_INSERCION,
                 Comentarios.PENDIENTE_ACTUALIZACION, Comentarios.PENDIENTE_ELIMINACION));
 

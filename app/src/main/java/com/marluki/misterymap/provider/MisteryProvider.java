@@ -25,7 +25,7 @@ public class MisteryProvider extends ContentProvider {
     public static final String URI_NO_SOPORTADA = "Uri no soportada";
 
     private static final String DATABASE_NAME = "mistery.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
 
     private DatabaseHelper helper;
 
@@ -192,8 +192,7 @@ public class MisteryProvider extends ContentProvider {
     };
     private final String[] proyOvni = new String[]{
             DatabaseHelper.Tablas.OBJETO_MAPA + ".*",
-            DatabaseHelper.Tablas.OVNI + "." + Ovnis.DIA,
-            DatabaseHelper.Tablas.OVNI + "." + Ovnis.HORA,
+            DatabaseHelper.Tablas.OVNI + "." + Ovnis.FECHA,
             Tipos.NOMBRE_TIPO
     };
     private final String[] proyFantasma = new String[]{
@@ -465,8 +464,43 @@ public class MisteryProvider extends ContentProvider {
                 notificarCambio(uri);
                 return Usuarios.crearUriUsuario(values.getAsString(Usuarios.ID));
             case TIPOS:
-                long emaitza = db.insertOrThrow(DatabaseHelper.Tablas.TIPO, null, values);
+                db.insertOrThrow(DatabaseHelper.Tablas.TIPO, null, values);
                 id = values.getAsString(Tipos.ID);
+                notificarCambio(uri);
+                return Tipos.crearUriTipo(id);
+            case OVNIS:
+                db.insertOrThrow(DatabaseHelper.Tablas.OVNI, null, values);
+                id = values.getAsString(Ovnis.OBJETO_ID);
+                notificarCambio(uri);
+                return Tipos.crearUriTipo(id);
+            case FANTASMAS:
+                db.insertOrThrow(DatabaseHelper.Tablas.FANTASMA, null, values);
+                id = values.getAsString(Fantasmas.OBJETO_ID);
+                notificarCambio(uri);
+                return Tipos.crearUriTipo(id);
+            case HISTORICOS:
+                db.insertOrThrow(DatabaseHelper.Tablas.HISTORICO, null, values);
+                id = values.getAsString(Historicos.OBJETO_ID);
+                notificarCambio(uri);
+                return Tipos.crearUriTipo(id);
+            case SIN_RESOLVER:
+                db.insertOrThrow(DatabaseHelper.Tablas.SIN_RESOLVER, null, values);
+                id = values.getAsString(SinResolver.OBJETO_ID);
+                notificarCambio(uri);
+                return Tipos.crearUriTipo(id);
+            case COMENTARIOS:
+                db.insertOrThrow(DatabaseHelper.Tablas.USUARIO, null, values);
+                id = values.getAsString(Usuarios.ID);
+                notificarCambio(uri);
+                return Tipos.crearUriTipo(id);
+            case FOTOS:
+                db.insertOrThrow(DatabaseHelper.Tablas.FOTO, null, values);
+                id = values.getAsString(Fotos.ID);
+                notificarCambio(uri);
+                return Tipos.crearUriTipo(id);
+            case PSICOFONIAS:
+                db.insertOrThrow(DatabaseHelper.Tablas.PSICOFONIA, null, values);
+                id = values.getAsString(Psicofonias.ID);
                 notificarCambio(uri);
                 return Tipos.crearUriTipo(id);
             default:
@@ -595,8 +629,7 @@ public class MisteryProvider extends ContentProvider {
                 String seleccion1 = String.format("%s=?", Comentarios.COMENTARIO_ID);
                 builder.setTables(COMENTARIO_JOIN_USUARIO);
                 c = builder.query(db, proyComentario, seleccion1, claves1, null, null,
-                        DatabaseHelper.Tablas.COMENTARIO + "." + Comentarios.DIA + "," +
-                                DatabaseHelper.Tablas.COMENTARIO + "." + Comentarios.HORA);
+                        DatabaseHelper.Tablas.COMENTARIO + "." + Comentarios.FECHA);
                 break;
             case OVNIS:
                 //Consultando todos los objetos
@@ -618,10 +651,39 @@ public class MisteryProvider extends ContentProvider {
                 c = db.query(DatabaseHelper.Tablas.SIN_RESOLVER, projection,
                         selection, selectionArgs, null, null, sortOrder);
                 break;
+            case OVNIS_ID:
+                id = Ovnis.obtenerIdOvni(uri);
+                //Consultando todos los objetos
+                c = db.query(DatabaseHelper.Tablas.OVNI, projection,
+                        Ovnis.OBJETO_ID + "=" + "\'" + id + "\'"
+                                + (!TextUtils.isEmpty(selection) ?
+                                " AND (" + selection + ')' : ""), selectionArgs, null, null, sortOrder);
+                break;
+            case FANTASMAS_ID:
+                id = Fantasmas.obtenerIdFantasma(uri);
+                //Consultando todos los objetos
+                c = db.query(DatabaseHelper.Tablas.OVNI, projection,
+                        Fantasmas.OBJETO_ID + "=" + "\'" + id + "\'"
+                                + (!TextUtils.isEmpty(selection) ?
+                                " AND (" + selection + ')' : ""), selectionArgs, null, null, sortOrder);
+                break;
+            case HISTORICOS_ID:
+                id = Historicos.obtenerIdHistorico(uri);
+                //Consultando todos los objetos
+                c = db.query(DatabaseHelper.Tablas.HISTORICO, projection,
+                        Historicos.OBJETO_ID + "=?", new String[]{id}, null, null, sortOrder);
+                break;
+            case SIN_RESOLVER_ID:
+                id = SinResolver.obtenerIdSinResolver(uri);
+                //Consultando todos los objetos
+                c = db.query(DatabaseHelper.Tablas.SIN_RESOLVER, projection,
+                        SinResolver.OBJETO_ID + "=" + "\'" + id + "\'"
+                                + (!TextUtils.isEmpty(selection) ?
+                                " AND (" + selection + ')' : ""), selectionArgs, null, null, sortOrder);
+                break;
             case FOTOS:
-                builder.setTables(FOTO_JOIN_USUARIO);
-                c = builder.query(db, proyFoto, selection, selectionArgs, null,
-                        null, null);
+                c = db.query(DatabaseHelper.Tablas.FOTO, projection, selection, selectionArgs, null,
+                        null, sortOrder);
                 break;
             case FOTOS_ID:
                 id = Fotos.obtenerIdFoto(uri);
@@ -630,16 +692,26 @@ public class MisteryProvider extends ContentProvider {
                         Fotos.ID + "=?", new String[]{id}, null,
                         null, null);
             case PSICOFONIAS:
-                builder.setTables(PSICOFONIA_JOIN_USUARIO);
-                c = builder.query(db, proyPsicofonia, selection, selectionArgs, null,
-                        null, null);
+                c = db.query(DatabaseHelper.Tablas.PSICOFONIA, projection, selection, selectionArgs, null,
+                        null, sortOrder);
                 break;
             case PSICOFONIAS_ID:
                 id = Psicofonias.obtenerIdPsicofonia(uri);
                 builder.setTables(PSICOFONIA_JOIN_USUARIO);
                 c = builder.query(db, proyPsicofonia, DatabaseHelper.Tablas.PSICOFONIA + "." +
-                        Psicofonias.ID + "=?", new String[]{id}, null,
+                                Psicofonias.ID + "=?", new String[]{id}, null,
                         null, null);
+                break;
+            case USUARIOS:
+                c = db.query(DatabaseHelper.Tablas.USUARIO, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case USUARIOS_ID:
+                id = Usuarios.obtenerIdUsuario(uri);
+                c = db.query(DatabaseHelper.Tablas.USUARIO, projection, selection, selectionArgs, null,
+                        null, null);
+                break;
+            case TIPOS:
+                c = db.query(DatabaseHelper.Tablas.TIPO, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             default:
                 throw new UnsupportedOperationException(URI_NO_SOPORTADA + " =>" + uri);
@@ -658,6 +730,26 @@ public class MisteryProvider extends ContentProvider {
         int afectados;
 
         switch (uriMatcher.match(uri)) {
+            case OBJETOS_MAPA:
+                afectados = db.update(DatabaseHelper.Tablas.OBJETO_MAPA, values, selection, selectionArgs);
+                notificarCambio(uri);
+                break;
+            case USUARIOS:
+                afectados = db.update(DatabaseHelper.Tablas.USUARIO, values, selection, selectionArgs);
+                notificarCambio(uri);
+                break;
+            case COMENTARIOS:
+                afectados = db.update(DatabaseHelper.Tablas.COMENTARIO, values, selection, selectionArgs);
+                notificarCambio(uri);
+                break;
+            case PSICOFONIAS:
+                afectados = db.update(DatabaseHelper.Tablas.PSICOFONIA, values, selection, selectionArgs);
+                notificarCambio(uri);
+                break;
+            case FOTOS:
+                afectados = db.update(DatabaseHelper.Tablas.FOTO, values, selection, selectionArgs);
+                notificarCambio(uri);
+                break;
             case OBJETOS_MAPA_ID:
                 id = Objetos_mapa.obtenerIdObjetoMapa(uri);
                 afectados = db.update(DatabaseHelper.Tablas.OBJETO_MAPA, values,

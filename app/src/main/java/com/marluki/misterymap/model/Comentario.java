@@ -11,17 +11,15 @@ public class Comentario {
     private String usuario_id;
     private String comentario_id;
     private String texto;
-    private String dia;
-    private String hora;
+    private String fecha;
 
-    public Comentario(String id, String objeto_id, String usuario_id, String comentario_id, String texto, String dia, String hora) {
+    public Comentario(String id, String objeto_id, String usuario_id, String comentario_id, String texto, String fecha) {
         this.id = id;
         this.objeto_id = objeto_id;
         this.usuario_id = usuario_id;
         this.comentario_id = comentario_id;
         this.texto = texto;
-        this.dia = dia;
-        this.hora = hora;
+        this.fecha = fecha;
     }
 
     public Comentario() {
@@ -67,20 +65,12 @@ public class Comentario {
         this.texto = texto;
     }
 
-    public String getDia() {
-        return dia;
+    public String getFecha() {
+        return fecha;
     }
 
-    public void setDia(String dia) {
-        this.dia = dia;
-    }
-
-    public String getHora() {
-        return hora;
-    }
-
-    public void setHora(String hora) {
-        this.hora = hora;
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
     }
 
     @Override
@@ -90,11 +80,10 @@ public class Comentario {
         boolean b1 = !c.getObjeto_id().equals(objeto_id) && c.getObjeto_id() != null;
         boolean b2 = !c.getUsuario_id().equals(usuario_id) && c.getUsuario_id() != null;
         boolean b3 = !c.getComentario_id().equals(comentario_id);
-        boolean b4 = !c.getDia().equals(dia) && c.getDia() != null;
-        boolean b5 = !c.getHora().equals(hora) && c.getHora() != null;
+        boolean b4 = !c.getFecha().equals(fecha) && c.getFecha() != null;
         boolean b6 = !c.getTexto().equals(texto) && c.getTexto() != null;
 
-        if (b || b1 || b2 || b3 || b4 || b5 || b6) return false;
+        if (b || b1 || b2 || b3 || b4 || b6) return false;
         else return true;
     }
 }

@@ -1,13 +1,15 @@
 package com.marluki.misterymap.ui;
 
+import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -20,6 +22,12 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.marluki.misterymap.MainActivity;
 import com.marluki.misterymap.R;
+import com.marluki.misterymap.google.App;
+import com.marluki.misterymap.provider.DatuBaseKontratua;
+import com.marluki.misterymap.sync.SyncHelper;
+
+import static com.marluki.misterymap.sync.SyncHelper.ACCOUNT_REQUEST_CODE;
+import static com.marluki.misterymap.sync.SyncHelper.LOCATION_REQUEST_CODE;
 
 public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
@@ -34,6 +42,11 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
         setUpGoogleApiClient();
+
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, "Ez dago kontuak eskuratzeko baimena!!");
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.GET_ACCOUNTS}, ACCOUNT_REQUEST_CODE);
+        }
     }
 
     private void setUpGoogleApiClient() {
@@ -61,6 +74,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
              * If the user's cached credentials are valid, the OptionalPendingResult will be "done"
              * and the GoogleSignInResult will be available instantly.
              */
+            App.getmInstance().setmGoogleApiClient(mGoogleApiClient);
             GoogleSignInResult result = opr.get();
             handleSignInResult(result);
             Log.d(TAG, "Got cached sign-in");
@@ -95,8 +109,12 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             // Signed in successfully.
             GoogleSignInAccount acct = result.getSignInAccount();
             if (acct != null) {
+                SyncHelper.initializeSync(getApplicationContext(), result.getSignInAccount());
+
+                App.getmInstance().setmGoogleApiClient(mGoogleApiClient);
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra("token", acct.getIdToken());
+                intent.putExtra(DatuBaseKontratua.Usuarios.ID, acct.getId());
           //      startActivity(FeedActivity.newStartIntent(this, acct.getDisplayName()));
       //          finish();
                 startActivity(intent);
@@ -125,6 +143,23 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             case R.id.sign_in_button:
                 signIn();
                 break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case ACCOUNT_REQUEST_CODE:
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                }
+                break;
+            case LOCATION_REQUEST_CODE:
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 }

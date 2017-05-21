@@ -8,7 +8,17 @@
 
 
     <!--Google Client Id -->
-    <string name="client_id">copia aki tu id de cliente</string>
+    <string name="client_id">client_key</string>
     <string name="sync_account_type">com.google</string>
     <string name="sync_authority">com.marluki.misterymap</string>
+
+    <!--Vista insert -->
+    <string name="insert_nombre">Nombre</string>
+    <string name="insert_detalles">Detalles</string>
+    <string name="insert_dia">Dia</string>
+    <string name="insert_hora">Hora</string>
+    <string name="boton_insert">Añadir Datos</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
