@@ -17,11 +17,4 @@
         android:layout_height="match_parent"
         class="com.marluki.misterymap.ui.FirstMapFragment"/>
 
-    <fragment
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/fragment2"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:name="com.marluki.misterymap.ui.BlankFragment"
-        class="com.marluki.misterymap.ui.BlankFragment"/>
 </RelativeLayout>

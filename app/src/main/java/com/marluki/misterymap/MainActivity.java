@@ -24,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
@@ -48,10 +49,11 @@ import com.marluki.misterymap.view.Map;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, AdapterView.OnClickListener, BlankFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, AdapterView.OnClickListener,
+        BlankFragment.OnFragmentInteractionListener, FirstMapFragment.OnFragmentInteractionListener {
 
 
-    private FirstMapFragment mFirstMapFragment;
+    private FirstMapFragment mFirstFirstMapFragment;
     private BlankFragment mBlankFragment;
     private GoogleApi mGoogleApi;
     private Map mMap;
@@ -76,9 +78,9 @@ public class MainActivity extends AppCompatActivity
         markers = new ArrayList<Marker>();
 
         fabOvni = (FloatingActionButton) findViewById(R.id.fabOvni);
-        fabFantasma = (FloatingActionButton)findViewById(R.id.fabFantasma);
-        fabHistorico = (FloatingActionButton)findViewById(R.id.fabHistorico);
-        fabSinResolver = (FloatingActionButton)findViewById(R.id.fabSinResolver);
+        fabFantasma = (FloatingActionButton) findViewById(R.id.fabFantasma);
+        fabHistorico = (FloatingActionButton) findViewById(R.id.fabHistorico);
+        fabSinResolver = (FloatingActionButton) findViewById(R.id.fabSinResolver);
 
         fabOvni.setOnClickListener(this);
         fabFantasma.setOnClickListener(this);
@@ -96,30 +98,30 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mFirstMapFragment = FirstMapFragment.newInstance();
-        mBlankFragment = BlankFragment.newInstance();
+        mFirstFirstMapFragment = new FirstMapFragment();
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.map, mFirstMapFragment)
+                .add(R.id.map, mFirstFirstMapFragment)
                 .commit();
 
         mGoogleApi = new GoogleApi(this, this, this);
+
         //mMap = new Map(this, mGoogleApi);
 
-        //mMap.getMapAsync(mFirstMapFragment);
-        mFirstMapFragment.getMapAsync(this);
+        //mMap.getMapAsync(mFirstFirstMapFragment);
+        mFirstFirstMapFragment.getMapAsync(this);
     }
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         this.googleMap = googleMap;
-        if(mapStyleisLight)
+        if (mapStyleisLight)
             googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getApplicationContext(), R.raw.formato_mapa_light));
         else
             googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getApplicationContext(), R.raw.formato_mapa_dark));
 
-        if(mGoogleApi.getLastKnownLocation()!=null) {
+        if (mGoogleApi.getLastKnownLocation() != null) {
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mGoogleApi.getLastKnownLocation().getLatitude(), mGoogleApi.getLastKnownLocation().getLongitude()), 5));
             googleMap.animateCamera(CameraUpdateFactory.zoomTo(12), 200, null);
         }
@@ -147,23 +149,51 @@ public class MainActivity extends AppCompatActivity
                 if (longMarker != null)
                     longMarker.remove();
                 longMarker = googleMap.addMarker(new MarkerOptions().title("Nueva posición").position(latLng).draggable(true));
+                if (mBlankFragment != null) {
+                    FragmentManager fm = getSupportFragmentManager();
+                    FragmentTransaction transaction = fm.beginTransaction();
+                    transaction.setCustomAnimations(R.anim.slide_gora, R.anim.slide_behera, R.anim.pop_exit, R.anim.pop_enter);
+                    transaction.remove(mBlankFragment);
+                    transaction.commit();
+                    mBlankFragment=null;
+                }
                 UpdateUI();
             }
         });
 
-        LoadMarkers loadMarkers = new LoadMarkers();
+        final LoadMarkers loadMarkers = new LoadMarkers();
         loadMarkers.execute();
 
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+                if (longMarker != null) {
+                    longMarker.remove();
+                    longMarker = null;
+                }
+
+                UpdateUI();
                 Log.d("onMarkerClick", "Click en marker " + marker.getTitle());
                 FragmentManager fm = getSupportFragmentManager();
+                mBlankFragment = (BlankFragment) fm.findFragmentByTag("fragmentA");
+                Bundle bundle = new Bundle();
+                bundle.putString("name", marker.getTitle());
                 FragmentTransaction transaction = fm.beginTransaction();
-                transaction.setCustomAnimations(R.anim.slide_gora, R.anim.slide_behera, R.anim.pop_enter, R.anim.pop_exit);
-                transaction.replace(R.id.fragment2, mBlankFragment, "fragmentA");
-                transaction.addToBackStack(null);
+                transaction.setCustomAnimations(R.anim.slide_gora, R.anim.slide_behera);
+                if (mBlankFragment != null) {
+
+                    mBlankFragment = BlankFragment.newInstance();
+                    mBlankFragment.setArguments(bundle);
+                    transaction.replace(R.id.content_main, mBlankFragment, "fragmentA");
+                } else {
+
+                    mBlankFragment = BlankFragment.newInstance();
+                    mBlankFragment.setArguments(bundle);
+                    transaction.add(R.id.content_main, mBlankFragment, "fragmentA");
+
+                }
                 transaction.commit();
+
 
                 return true;
             }
@@ -173,7 +203,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag("fragmentA");
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -182,7 +211,15 @@ public class MainActivity extends AppCompatActivity
                 longMarker = null;
                 UpdateUI();
             } else {
-                super.onBackPressed();
+                if (mBlankFragment != null) {
+                    FragmentManager fm = getSupportFragmentManager();
+                    FragmentTransaction transaction = fm.beginTransaction();
+                    transaction.setCustomAnimations(R.anim.slide_gora, R.anim.slide_behera, R.anim.pop_exit, R.anim.pop_enter);
+                    transaction.remove(mBlankFragment);
+                    transaction.commit();
+                    mBlankFragment=null;
+                } else
+                    super.onBackPressed();
             }
         }
     }
@@ -286,7 +323,7 @@ public class MainActivity extends AppCompatActivity
                 //mMap.moveCamera(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 12);
 
 
-                if(lastLocation != null)
+                if (lastLocation != null)
                     mGoogleApi.updateLocation(lastLocation);
 
             } else {
@@ -302,7 +339,7 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
 
         mGoogleApi.connect();
-        super .onStart();
+        super.onStart();
     }
 
     @Override
@@ -316,17 +353,17 @@ public class MainActivity extends AppCompatActivity
         mGoogleApi.disconnect();
     }
 
-    private void UpdateUI () {
+    private void UpdateUI() {
         if (longMarker != null) {
-            fabOvni.setVisibility(View.VISIBLE);
-            fabFantasma.setVisibility(View.VISIBLE);
-            fabHistorico.setVisibility(View.VISIBLE);
-            fabSinResolver.setVisibility(View.VISIBLE);
+            fabOvni.show();
+            fabFantasma.show();
+            fabHistorico.show();
+            fabSinResolver.show();
         } else {
-            fabOvni.setVisibility(View.INVISIBLE);
-            fabFantasma.setVisibility(View.INVISIBLE);
-            fabHistorico.setVisibility(View.INVISIBLE);
-            fabSinResolver.setVisibility(View.INVISIBLE);
+            fabOvni.hide();
+            fabFantasma.hide();
+            fabHistorico.hide();
+            fabSinResolver.hide();
         }
     }
 
@@ -353,7 +390,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if(c.getCount() > 0) {
+            if (c.getCount() > 0) {
                 while (c.moveToNext()) {
                     Marker marker = null;
                     ObjetoMapa objetoMapa = new ObjetoMapa(
@@ -388,24 +425,20 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        public Marker addMarkerOvni(ObjetoMapa objeto)
-        {
+        public Marker addMarkerOvni(ObjetoMapa objeto) {
             return googleMap.addMarker(new MarkerOptions().position(new LatLng(objeto.getLatitud(), objeto.getLongitud())).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker_ovni)).title(objeto.getNombre_objeto()).draggable(false));
 
         }
 
-        public Marker addMarkerHistorico(ObjetoMapa objeto)
-        {
+        public Marker addMarkerHistorico(ObjetoMapa objeto) {
             return googleMap.addMarker(new MarkerOptions().position(new LatLng(objeto.getLatitud(), objeto.getLongitud())).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker_historico)).title(objeto.getNombre_objeto()).draggable(false));
         }
 
-        public Marker addMarkerFantasma(ObjetoMapa objeto)
-        {
+        public Marker addMarkerFantasma(ObjetoMapa objeto) {
             return googleMap.addMarker(new MarkerOptions().position(new LatLng(objeto.getLatitud(), objeto.getLongitud())).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker_fantasma)).title(objeto.getNombre_objeto()).draggable(false));
         }
 
-        public Marker addMarkerSinResolver(ObjetoMapa objeto)
-        {
+        public Marker addMarkerSinResolver(ObjetoMapa objeto) {
             return googleMap.addMarker(new MarkerOptions().position(new LatLng(objeto.getLatitud(), objeto.getLongitud())).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker_sin_resolver)).title(objeto.getNombre_objeto()).draggable(false));
         }
     }

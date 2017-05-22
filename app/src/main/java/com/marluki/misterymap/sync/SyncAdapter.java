@@ -146,11 +146,16 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
             if (this.account != null)
                 deleteUser(getContext(), this.account.getId(), this.account.getIdToken());
 
-        if (!soloSubida) {
-            // sincronizacion local
-            doSyncLocal(syncResult);
+        if (SyncHelper.isInternetConnection(getContext())) {
+            Log.d(TAG, "Existe conexion a internet! Empezando Sincronización.");
+            if (!soloSubida) {
+                // sincronizacion local
+                doSyncLocal(syncResult);
+            } else {
+                updateRemoteData(token);
+            }
         } else {
-            updateRemoteData(token);
+            Log.d(TAG, "No hay conexion a internet!");
         }
 
     }
@@ -158,7 +163,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
     private void doSyncLocal(final SyncResult syncResult) {
         String[] urls = Cons.GET_URLS;
         for (int i = 0; i < urls.length; i++) {
-            Log.i(TAG, "Iniciando peticion GET a" + urls[i]);
+            Log.i(TAG, "Iniciando peticion GET a " + urls[i]);
 
             VolleySingleton.getInstance(getContext()).addToRequestQueue(
                     new JsonObjectRequest(
@@ -173,7 +178,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
                             new Response.ErrorListener() {
                                 @Override
                                 public void onErrorResponse(VolleyError error) {
-                                    Log.d(TAG, error.getMessage().toString());
+                                    //if(error.getMessage()!=null)
+                                        //Log.d(TAG, error.getMessage().toString());
                                 }
                             }
                     )
@@ -924,7 +930,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
                                     new Response.ErrorListener() {
                                         @Override
                                         public void onErrorResponse(VolleyError error) {
-                                            Log.d(TAG, "Error Volley: " + error.getMessage());
+                                            if(error!=null)
+                                                Log.d(TAG, "Error Voley: " + error.getMessage().toString());
                                         }
                                     }
                             ) {
@@ -975,7 +982,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
                                     new Response.ErrorListener() {
                                         @Override
                                         public void onErrorResponse(VolleyError error) {
-                                            Log.d(TAG, "Error Volley: " + error.getMessage());
+                                            if(error!=null)
+                                                Log.d(TAG, "Error Voley: " + error.getMessage().toString());
                                         }
                                     }
                             ) {
@@ -1026,7 +1034,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
                                     new Response.ErrorListener() {
                                         @Override
                                         public void onErrorResponse(VolleyError error) {
-                                            Log.d(TAG, "Error Volley: " + error.getMessage());
+                                            if(error!=null)
+                                                Log.d(TAG, "Error Voley: " + error.getMessage().toString());
                                         }
                                     }
                             ) {
@@ -1363,7 +1372,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
                                 new Response.ErrorListener() {
                                     @Override
                                     public void onErrorResponse(VolleyError error) {
-                                        Log.d(TAG, "Error Volley: " + error.getMessage());
+                                        if(error!=null)
+                                            Log.d(TAG, "Error Voley: " + error.getMessage().toString());
                                     }
                                 }
                         ) {
@@ -1449,7 +1459,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                Log.i(TAG, error.getMessage());
+                                //Log.i(TAG, error.getMessage());
                             }
                         }
                 )
@@ -1493,6 +1503,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
+                                if(error!=null)
+                                    Log.d(TAG, "Error Voley: " + error.getMessage().toString());
                             }
                         }
                 )
