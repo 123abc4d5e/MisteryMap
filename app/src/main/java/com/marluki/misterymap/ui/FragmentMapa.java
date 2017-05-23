@@ -121,7 +121,7 @@ public class FragmentMapa extends SupportMapFragment implements OnMapReadyCallba
     public void onMapReady(final GoogleMap googleMap) {
         this.googleMap = googleMap;
         if (mGoogleApi.getLastKnownLocation() != null) {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mGoogleApi.getLastKnownLocation().getLatitude(), mGoogleApi.getLastKnownLocation().getLongitude()), 5));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mGoogleApi.getLastKnownLocation().getLatitude(), mGoogleApi.getLastKnownLocation().getLongitude()), 12));
             googleMap.animateCamera(CameraUpdateFactory.zoomTo(12), 200, null);
         }
 
