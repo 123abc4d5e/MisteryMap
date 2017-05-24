@@ -22,10 +22,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.Marker;
+import com.marluki.misterymap.model.ObjetoMapa;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
 import com.marluki.misterymap.sync.SyncHelper;
 import com.marluki.misterymap.ui.BlankFragment;
@@ -40,17 +42,23 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnClickListener,
         BlankFragment.OnFragmentInteractionListener, FirstMapFragment.OnFragmentInteractionListener, FragmentMapa.OnMarkerClickListener,
         FragmentMapa.OnUpdateUIListener, FragmentMapa.OnMapLongClickListener {
+
+    private AutoCompleteTextView autoCompleteTextView;
+    private SearchAdapter searchAdapter;
     private ContentResolver resolver;
+    private ObjetoMapa objetoMapa;
 
     private FragmentMapa fragmentMapa;
     private BlankFragment mBlankFragment;
     private Marker longMarker;
     private GoogleApi mGoogleApi;
+    private ArrayList<ObjetoMapa> arrayObjeto;
 
     private FloatingActionButton fabOvni;
     private FloatingActionButton fabFantasma;
     private FloatingActionButton fabHistorico;
     private FloatingActionButton fabSinResolver;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +66,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        resolver = getContentResolver();
 
         fabOvni = (FloatingActionButton) findViewById(R.id.fabOvni);
         fabFantasma = (FloatingActionButton) findViewById(R.id.fabFantasma);
@@ -97,6 +107,24 @@ public class MainActivity extends AppCompatActivity
 
         //mMap.getMapAsync(mFirstFirstMapFragment);
         //mFirstFirstMapFragment.getMapAsync(this);
+
+        Uri uri=DatuBaseKontratua.Objetos_mapa.URI_CONTENT;
+
+        Cursor c=resolver.query(uri,null,null,null,null);
+
+        arrayObjeto=new ArrayList<ObjetoMapa>();
+
+        while (c.moveToNext()){
+            objetoMapa = new ObjetoMapa();
+            objetoMapa.setNombre_objeto(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO)));
+            objetoMapa.setId(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID)));
+            objetoMapa.setLatitud(c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LATITUD)));
+            objetoMapa.setLongitud(c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LONGITUD)));
+            arrayObjeto.add(objetoMapa);
+        }
+
+
+
     }
 
     @Override
@@ -164,6 +192,11 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+        autoCompleteTextView=(AutoCompleteTextView)menu.findItem(R.id.action_search).getActionView().findViewById(R.id.search_box);
+        searchAdapter = new SearchAdapter(getApplicationContext(),arrayObjeto);
+        autoCompleteTextView.setAdapter(searchAdapter);
+        autoCompleteTextView.setThreshold(1);
         return true;
     }
 

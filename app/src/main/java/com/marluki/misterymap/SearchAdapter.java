@@ -48,16 +48,16 @@ public class SearchAdapter extends BaseAdapter implements Filterable{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater=LayoutInflater.from(context);
+        LayoutInflater inflater=(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
          ViewHolder holder;
 
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.search_layout,
+            convertView = inflater.inflate(R.layout.suggestion_layout,
                     parent,
                     false);
             holder = new ViewHolder();
-            holder.autoText = (TextView) convertView.findViewById(R.id.search_box);
+            holder.autoText = (TextView) convertView.findViewById(R.id.text1);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -69,6 +69,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable{
 
         return null;
     }
+
 
     private static class ViewHolder {
         TextView autoText;
