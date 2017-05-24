@@ -1,9 +1,15 @@
 package com.marluki.misterymap;
 
+import android.Manifest;
 import android.content.ContentResolver;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
@@ -16,7 +22,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.Marker;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
 import com.marluki.misterymap.sync.SyncHelper;
@@ -24,6 +32,7 @@ import com.marluki.misterymap.ui.BlankFragment;
 import com.marluki.misterymap.ui.FirstMapFragment;
 import com.marluki.misterymap.ui.FragmentMapa;
 import com.marluki.misterymap.ui.InsertActivity;
+import com.marluki.misterymap.view.GoogleApi;
 
 import java.util.ArrayList;
 
@@ -31,11 +40,12 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnClickListener,
         BlankFragment.OnFragmentInteractionListener, FirstMapFragment.OnFragmentInteractionListener, FragmentMapa.OnMarkerClickListener,
         FragmentMapa.OnUpdateUIListener, FragmentMapa.OnMapLongClickListener {
-
+    private ContentResolver resolver;
 
     private FragmentMapa fragmentMapa;
     private BlankFragment mBlankFragment;
     private Marker longMarker;
+    private GoogleApi mGoogleApi;
 
     private FloatingActionButton fabOvni;
     private FloatingActionButton fabFantasma;
@@ -77,7 +87,11 @@ public class MainActivity extends AppCompatActivity
                 .replace(R.id.map, fragmentMapa)
                 .commitAllowingStateLoss();
 
-        //mGoogleApi = new GoogleApi(this, this, this);
+        mGoogleApi = new GoogleApi(this, this, this);
+
+        if (savedInstanceState!=null){
+            getSupportFragmentManager().getFragment(savedInstanceState, "Fragment");
+        }
 
         //mMap = new Map(this, mGoogleApi);
 
@@ -105,6 +119,43 @@ public class MainActivity extends AppCompatActivity
                     mBlankFragment = null;
                 } else
                     super.onBackPressed();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 60) {
+            if (grantResults.length == 1
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                //Permiso concedido
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                Location lastLocation =
+                        LocationServices.FusedLocationApi.getLastLocation(mGoogleApi.getGoogleApiClient());
+
+                //mMap.addMarkerHistorico(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), "Ultima Posicion Conocida");
+                //mMap.moveCamera(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 12);
+
+
+                if (lastLocation != null)
+                    mGoogleApi.updateLocation(lastLocation);
+
+            } else {
+                //Permiso denegado:
+                //Deberíamos deshabilitar toda la funcionalidad relativa a la localización.
+
+                Toast.makeText(getApplicationContext(), "Permiso Denegado!", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -234,7 +285,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMarkerClick(String id) {
         longMarker = null;
-
         FragmentManager fm = getSupportFragmentManager();
         mBlankFragment = (BlankFragment) fm.findFragmentByTag("fragmentA");
         Bundle bundle = new Bundle();

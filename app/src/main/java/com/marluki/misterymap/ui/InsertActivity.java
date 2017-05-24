@@ -63,7 +63,7 @@ public class InsertActivity extends AppCompatActivity {
         hora = (EditText)findViewById(R.id.txtHora);
 
         btnGuardar = (Button)findViewById(R.id.btnGuardar);
-        UpdateUI(tipo);
+
 
         btnGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,30 +103,6 @@ public class InsertActivity extends AppCompatActivity {
 
             }
         });
-    }
 
-    private void UpdateUI(int tipo) {
-        switch (tipo) {
-            case 1:
-                toolbar.setTitle("Insertar Ovni");
-                dia.setVisibility(View.VISIBLE);
-                hora.setVisibility(View.VISIBLE);
-                break;
-            case 2:
-                toolbar.setTitle("Insertar Fantasma");
-                dia.setVisibility(View.INVISIBLE);
-                hora.setVisibility(View.INVISIBLE);
-                break;
-            case 3:
-                toolbar.setTitle("Insertar Historico");
-                dia.setVisibility(View.VISIBLE);
-                hora.setVisibility(View.VISIBLE);
-                break;
-            case 4:
-                toolbar.setTitle("Insertar Sin Resolver");
-                dia.setVisibility(View.VISIBLE);
-                hora.setVisibility(View.VISIBLE);
-                break;
-        }
     }
 }

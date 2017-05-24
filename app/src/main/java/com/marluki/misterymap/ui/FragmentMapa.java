@@ -59,15 +59,10 @@ public class FragmentMapa extends SupportMapFragment implements OnMapReadyCallba
     private ContentResolver resolver;
     private GoogleMap googleMap;
     private ArrayList<Marker> markers;
+    private static LoadMarkers loadMarkers;
 
     public FragmentMapa() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle bundle) {
-        super.onCreate(bundle);
-        mGoogleApi = new GoogleApi(getContext(), getActivity(), getActivity());
     }
 
     @Override
@@ -82,7 +77,6 @@ public class FragmentMapa extends SupportMapFragment implements OnMapReadyCallba
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         resolver = getActivity().getContentResolver();
-        //mGoogleApi = new GoogleApi(getContext(), getActivity(), getActivity());
         getMapAsync(this);
     }
 
@@ -120,10 +114,10 @@ public class FragmentMapa extends SupportMapFragment implements OnMapReadyCallba
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         this.googleMap = googleMap;
-        if (mGoogleApi.getLastKnownLocation() != null) {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mGoogleApi.getLastKnownLocation().getLatitude(), mGoogleApi.getLastKnownLocation().getLongitude()), 12));
-            googleMap.animateCamera(CameraUpdateFactory.zoomTo(12), 200, null);
-        }
+//        if (mGoogleApi.getLastKnownLocation() != null) {
+//            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mGoogleApi.getLastKnownLocation().getLatitude(), mGoogleApi.getLastKnownLocation().getLongitude()), 12));
+//            googleMap.animateCamera(CameraUpdateFactory.zoomTo(12), 200, null);
+//        }
 
         if (mapStyleisLight)
             googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getActivity().getApplicationContext(), R.raw.formato_mapa_light));
@@ -165,7 +159,7 @@ public class FragmentMapa extends SupportMapFragment implements OnMapReadyCallba
             }
         });
 
-        final LoadMarkers loadMarkers = new LoadMarkers();
+        loadMarkers = new LoadMarkers();
         loadMarkers.execute();
 
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -180,7 +174,7 @@ public class FragmentMapa extends SupportMapFragment implements OnMapReadyCallba
                     uiListener.onUpdateUI(longMarker);
 
                 ObjetoMapa objetoMapa = (ObjetoMapa) marker.getTag();
-                markerClickListener.onMarkerClick(objetoMapa.getId());
+                markerClickListener.onMarkerClick(objetoMapa.getNombre_objeto());
 
                 return true;
             }
@@ -191,69 +185,21 @@ public class FragmentMapa extends SupportMapFragment implements OnMapReadyCallba
     @Override
     public void onResume() {
         super.onResume();
-        mGoogleApi.connect();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mGoogleApi.getGoogleApiClient().isConnected())
-            mGoogleApi.disconnect();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        mGoogleApi.connect();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mGoogleApi.disconnect();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mGoogleApi.disconnect();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 60) {
-            if (grantResults.length == 1
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                //Permiso concedido
-                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                }
-                Location lastLocation =
-                        LocationServices.FusedLocationApi.getLastLocation(mGoogleApi.getGoogleApiClient());
-
-                //mMap.addMarkerHistorico(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), "Ultima Posicion Conocida");
-                //mMap.moveCamera(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 12);
-
-
-                if (lastLocation != null)
-                    mGoogleApi.updateLocation(lastLocation);
-
-            } else {
-                //Permiso denegado:
-                //Deberíamos deshabilitar toda la funcionalidad relativa a la localización.
-
-                Toast.makeText(getContext(), "Permiso Denegado!", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
     public interface OnUpdateUIListener {
@@ -270,12 +216,13 @@ public class FragmentMapa extends SupportMapFragment implements OnMapReadyCallba
 
 
 
+
+
     public class LoadMarkers extends AsyncTask<Void, Void, Void> {
         Cursor c;
 
         @Override
         protected Void doInBackground(Void... params) {
-            c = resolver.query(DatuBaseKontratua.Objetos_mapa.URI_CONTENT, null, null, null, null);
 
             return null;
         }
@@ -283,6 +230,7 @@ public class FragmentMapa extends SupportMapFragment implements OnMapReadyCallba
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            c = resolver.query(DatuBaseKontratua.Objetos_mapa.URI_CONTENT, null, null, null, null);
             if (c.getCount() > 0) {
                 while (c.moveToNext()) {
                     Marker marker = null;

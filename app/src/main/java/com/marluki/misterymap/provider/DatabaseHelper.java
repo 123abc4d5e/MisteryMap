@@ -76,7 +76,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Tablas.OVNI, BaseColumns._ID, Ovnis.OBJETO_ID, referencias.OBJETO_ID, Ovnis.FECHA));
 
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "%s TEXT UNIQUE NOT NULL %s,%s INTEGER NOT NULL,%s INTEGER NOT NULL)",
+                        "%s TEXT UNIQUE NOT NULL %s,%s INTEGER DEFAULT 0,%s INTEGER DEFAULT 0)",
                 Tablas.FANTASMA, BaseColumns._ID, Fantasmas.OBJETO_ID, referencias.OBJETO_ID, Fantasmas.VISTO, Fantasmas.FAKE));
 
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +

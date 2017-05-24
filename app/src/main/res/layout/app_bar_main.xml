@@ -30,7 +30,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:visibility="invisible"
-        app:srcCompat="@drawable/ic_map_marker_ovni" />
+        app:srcCompat="@drawable/ic_alien" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabFantasma"
@@ -40,7 +40,7 @@
         android:layout_marginBottom="88dp"
         android:layout_marginEnd="@dimen/fab_margin"
         android:visibility="invisible"
-        app:srcCompat="@drawable/ic_map_marker_fantasma" />
+        app:srcCompat="@drawable/ic_ghost" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabHistorico"
@@ -50,7 +50,7 @@
         android:layout_marginBottom="160dp"
         android:layout_marginEnd="@dimen/fab_margin"
         android:visibility="invisible"
-        app:srcCompat="@drawable/ic_map_marker_historico" />
+        app:srcCompat="@drawable/ic_universidad" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabSinResolver"
@@ -60,6 +60,6 @@
         android:layout_marginBottom="232dp"
         android:layout_marginEnd="@dimen/fab_margin"
         android:visibility="invisible"
-        app:srcCompat="@drawable/ic_map_marker_sin_resolver" />
+        app:srcCompat="@drawable/ic_question" />
 
 </android.support.design.widget.CoordinatorLayout>

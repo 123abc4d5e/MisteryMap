@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.marluki.misterymap.provider.DatuBaseKontratua.*;
+import com.marluki.misterymap.ui.FragmentMapa;
 
 import java.util.ArrayList;
 
@@ -25,7 +26,7 @@ public class MisteryProvider extends ContentProvider {
     public static final String URI_NO_SOPORTADA = "Uri no soportada";
 
     private static final String DATABASE_NAME = "mistery.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 5;
 
     private DatabaseHelper helper;
 
@@ -662,7 +663,8 @@ public class MisteryProvider extends ContentProvider {
             case FANTASMAS_ID:
                 id = Fantasmas.obtenerIdFantasma(uri);
                 //Consultando todos los objetos
-                c = db.query(DatabaseHelper.Tablas.OVNI, projection,
+                c = db.query(DatabaseHelper.Tablas.FANTASMA
+                        , projection,
                         Fantasmas.OBJETO_ID + "=" + "\'" + id + "\'"
                                 + (!TextUtils.isEmpty(selection) ?
                                 " AND (" + selection + ')' : ""), selectionArgs, null, null, sortOrder);
