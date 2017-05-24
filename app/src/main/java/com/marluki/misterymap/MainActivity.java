@@ -12,6 +12,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,7 +22,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
@@ -44,9 +47,11 @@ public class MainActivity extends AppCompatActivity
         FragmentMapa.OnUpdateUIListener, FragmentMapa.OnMapLongClickListener {
 
     private AutoCompleteTextView autoCompleteTextView;
+    private ArrayList<String> suggestions;
     private SearchAdapter searchAdapter;
     private ContentResolver resolver;
     private ObjetoMapa objetoMapa;
+
 
     private FragmentMapa fragmentMapa;
     private BlankFragment mBlankFragment;
@@ -110,8 +115,10 @@ public class MainActivity extends AppCompatActivity
 
         Uri uri=DatuBaseKontratua.Objetos_mapa.URI_CONTENT;
 
-        Cursor c=resolver.query(uri,null,null,null,null);
+        resolver=getContentResolver();
 
+        Cursor c=resolver.query(uri,null,null,null,null);
+        suggestions=new ArrayList<String>();
         arrayObjeto=new ArrayList<ObjetoMapa>();
 
         while (c.moveToNext()){
@@ -121,9 +128,8 @@ public class MainActivity extends AppCompatActivity
             objetoMapa.setLatitud(c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LATITUD)));
             objetoMapa.setLongitud(c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LONGITUD)));
             arrayObjeto.add(objetoMapa);
+            suggestions.add(objetoMapa.getNombre_objeto());
         }
-
-
 
     }
 
@@ -192,10 +198,10 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-
+        final ArrayAdapter<String> adapter=new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_dropdown_item_1line,suggestions);
         autoCompleteTextView=(AutoCompleteTextView)menu.findItem(R.id.action_search).getActionView().findViewById(R.id.search_box);
         searchAdapter = new SearchAdapter(getApplicationContext(),arrayObjeto);
-        autoCompleteTextView.setAdapter(searchAdapter);
+        autoCompleteTextView.setAdapter(adapter);
         autoCompleteTextView.setThreshold(1);
         return true;
     }
