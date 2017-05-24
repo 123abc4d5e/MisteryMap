@@ -10,15 +10,18 @@ public class ObjetoMapa implements Comparator<ObjetoMapa> {
 
     private String id;
     private int tipo_id;
-    private Float latitud;
-    private Float longitud;
+    private Double latitud;
+    private Double longitud;
     private String usuario_id;
     private String nombre_objeto;
     private String detalles;
     private String pais;
     private String ciudad;
 
-    public ObjetoMapa(String id, int tipo_id, Float latitud, Float longitud, String usuario_id, String nombre_objeto, String detalles, String pais, String ciudad) {
+    public ObjetoMapa() {
+    }
+
+    public ObjetoMapa(String id, int tipo_id, Double latitud, Double longitud, String usuario_id, String nombre_objeto, String detalles, String pais, String ciudad) {
         this.id = id;
         this.tipo_id = tipo_id;
         this.latitud = latitud;
@@ -46,19 +49,19 @@ public class ObjetoMapa implements Comparator<ObjetoMapa> {
         this.tipo_id = tipo_id;
     }
 
-    public Float getLatitud() {
+    public Double getLatitud() {
         return latitud;
     }
 
-    public void setLatitud(Float latitud) {
+    public void setLatitud(Double latitud) {
         this.latitud = latitud;
     }
 
-    public Float getLongitud() {
+    public Double getLongitud() {
         return longitud;
     }
 
-    public void setLongitud(Float longitud) {
+    public void setLongitud(Double longitud) {
         this.longitud = longitud;
     }
 

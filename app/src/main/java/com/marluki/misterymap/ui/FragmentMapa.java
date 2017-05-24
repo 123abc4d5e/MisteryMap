@@ -237,8 +237,8 @@ public class FragmentMapa extends SupportMapFragment implements OnMapReadyCallba
                     ObjetoMapa objetoMapa = new ObjetoMapa(
                             c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID)),
                             c.getInt(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.TIPO_ID)),
-                            c.getFloat(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LATITUD)),
-                            c.getFloat(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LONGITUD)),
+                            c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LATITUD)),
+                            c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LONGITUD)),
                             c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.USUARIO_ID)),
                             c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO)),
                             c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.DETALLES)),
