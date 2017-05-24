@@ -1,6 +1,7 @@
 package com.marluki.misterymap;
 
 import android.content.ContentResolver;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,8 +17,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 
 import com.google.android.gms.maps.model.Marker;
+import com.marluki.misterymap.model.ObjetoMapa;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
 import com.marluki.misterymap.sync.SyncHelper;
 import com.marluki.misterymap.ui.BlankFragment;
@@ -32,10 +35,15 @@ public class MainActivity extends AppCompatActivity
         BlankFragment.OnFragmentInteractionListener, FirstMapFragment.OnFragmentInteractionListener, FragmentMapa.OnMarkerClickListener,
         FragmentMapa.OnUpdateUIListener, FragmentMapa.OnMapLongClickListener {
 
+    private AutoCompleteTextView autoCompleteTextView;
+    private SearchAdapter searchAdapter;
+    private ContentResolver resolver;
+    private ObjetoMapa objetoMapa;
 
     private FragmentMapa fragmentMapa;
     private BlankFragment mBlankFragment;
     private Marker longMarker;
+    private ArrayList<ObjetoMapa> ArrayObjeto;
 
     private FloatingActionButton fabOvni;
     private FloatingActionButton fabFantasma;
@@ -83,6 +91,28 @@ public class MainActivity extends AppCompatActivity
 
         //mMap.getMapAsync(mFirstFirstMapFragment);
         //mFirstFirstMapFragment.getMapAsync(this);
+
+        Uri uri=DatuBaseKontratua.Objetos_mapa.URI_CONTENT;
+
+        Cursor c=resolver.query(uri,null,null,null,null);
+
+        ArrayObjeto=new ArrayList<ObjetoMapa>();
+
+        while (c.moveToNext()){
+            objetoMapa =new ObjetoMapa();
+            objetoMapa.setNombre_objeto(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO)));
+            objetoMapa.setId(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID)));
+            objetoMapa.setLatitud(c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LATITUD)));
+            objetoMapa.setLongitud(c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LONGITUD)));
+            ArrayObjeto.add(objetoMapa);
+        }
+
+        searchAdapter=new SearchAdapter(getApplicationContext(),ArrayObjeto);
+        autoCompleteTextView=(AutoCompleteTextView)toolbar.findViewById(R.id.search_box);
+        autoCompleteTextView.setAdapter(searchAdapter);
+
+
+
     }
 
     @Override
