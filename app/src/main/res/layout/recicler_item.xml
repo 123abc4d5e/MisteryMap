@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <ImageView
+        android:src="@mipmap/ic_launcher"
+        android:id="@+id/imageUserComent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/nav_header_vertical_spacing" />
+    <TextView
+        android:id="@+id/txtUserComentario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10sp"
+        android:layout_marginStart="10sp"
+        android:text="Lucia aramendi"
+        android:layout_toRightOf="@id/imageUserComent"/>
+    <TextView
+        android:id="@+id/txtFechaComent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10sp"
+        android:layout_marginStart="10sp"
+        android:layout_marginEnd="7sp"
+        android:gravity="end"
+        android:text="33/05/2017 10:10"
+        android:layout_toRightOf="@id/txtUserComentario"/>
+    <TextView
+        android:id="@+id/txtComent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageUserComent"
+        android:layout_below="@id/txtUserComentario"
+        android:layout_margin="10sp"
+        android:text="dgdgdfhfdjhjfhjkfhkfdhkfhkjfdhkjfhgkjfhfdjhkdfhjfhfdkghjdfhjkfdhkjdfgkhjfkhjfkhjfkhfjghkfhjkdfhjfkghjfkhgdfkhgdfkhgjdfkghjdkfjhgjdfgkhkdfhgjkdkfhgjdkfhgjdfkhgjkfdhgjk"/>
+
+
+
+</RelativeLayout>
