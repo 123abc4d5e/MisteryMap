@@ -12,7 +12,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,7 +21,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -33,7 +31,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.marluki.misterymap.model.ObjetoMapa;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
 import com.marluki.misterymap.sync.SyncHelper;
-import com.marluki.misterymap.ui.BlankFragment;
+import com.marluki.misterymap.ui.ObjectFragment;
 import com.marluki.misterymap.ui.FirstMapFragment;
 import com.marluki.misterymap.ui.FragmentMapa;
 import com.marluki.misterymap.ui.InsertActivity;
@@ -43,7 +41,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnClickListener,
-        BlankFragment.OnFragmentInteractionListener, FirstMapFragment.OnFragmentInteractionListener, FragmentMapa.OnMarkerClickListener,
+        ObjectFragment.OnFragmentInteractionListener, FirstMapFragment.OnFragmentInteractionListener, FragmentMapa.OnMarkerClickListener,
         FragmentMapa.OnUpdateUIListener, FragmentMapa.OnMapLongClickListener {
 
     private AutoCompleteTextView autoCompleteTextView;
@@ -54,7 +52,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private FragmentMapa fragmentMapa;
-    private BlankFragment mBlankFragment;
+    private ObjectFragment mBlankFragment;
     private Marker longMarker;
     private GoogleApi mGoogleApi;
     private ArrayList<ObjetoMapa> arrayObjeto;
@@ -325,19 +323,19 @@ public class MainActivity extends AppCompatActivity
     public void onMarkerClick(String id) {
         longMarker = null;
         FragmentManager fm = getSupportFragmentManager();
-        mBlankFragment = (BlankFragment) fm.findFragmentByTag("fragmentA");
+        mBlankFragment = (ObjectFragment) fm.findFragmentByTag("fragmentA");
         Bundle bundle = new Bundle();
         bundle.putString("name", id);
         FragmentTransaction transaction = fm.beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_gora, R.anim.slide_behera);
         if (mBlankFragment != null) {
 
-            mBlankFragment = BlankFragment.newInstance();
+            mBlankFragment = ObjectFragment.newInstance();
             mBlankFragment.setArguments(bundle);
             transaction.replace(R.id.content_main, mBlankFragment, "fragmentA");
         } else {
 
-            mBlankFragment = BlankFragment.newInstance();
+            mBlankFragment = ObjectFragment.newInstance();
             mBlankFragment.setArguments(bundle);
             transaction.add(R.id.content_main, mBlankFragment, "fragmentA");
 
