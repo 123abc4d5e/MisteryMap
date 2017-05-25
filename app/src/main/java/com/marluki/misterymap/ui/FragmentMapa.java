@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -212,6 +213,11 @@ public class FragmentMapa extends SupportMapFragment implements OnMapReadyCallba
 
     public interface OnMarkerClickListener {
         void onMarkerClick(String id);
+    }
+
+    public void moveToLocation(Double lat, Double lon) {
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat, lon)));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
     }
 
 

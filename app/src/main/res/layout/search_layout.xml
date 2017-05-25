@@ -11,7 +11,7 @@
         android:dropDownVerticalOffset="5dp"
         android:dropDownWidth="wrap_content"
         android:inputType="textAutoComplete|textAutoCorrect"
-        android:popupBackground="@android:color/transparent"
+        android:popupBackground="@android:color/white"
         android:textColor="#FFFFFF" >
     </AutoCompleteTextView>
 
