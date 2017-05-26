@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.marluki.misterymap.model.ObjetoMapa;
+import com.marluki.misterymap.model.ObjetoMapa2;
 
 import java.util.ArrayList;
 
@@ -17,32 +18,32 @@ import java.util.ArrayList;
 
 public class ObjetosAdapter extends RecyclerView.Adapter<ObjetosAdapter.ListaViewHolder> {
 
-    private ArrayList<ObjetoMapa> objetos;
+    private ArrayList<ObjetoMapa2> objetos;
 
-    public ObjetosAdapter(ArrayList<ObjetoMapa>objetos){
-        this.objetos=objetos;
+    public ObjetosAdapter(ArrayList<ObjetoMapa2> objetos) {
+        this.objetos = objetos;
     }
 
 
     @Override
     public ListaViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView= LayoutInflater.from(parent.getContext()).inflate(R.layout.recicler_item,parent,false);
-        ObjetosAdapter.ListaViewHolder listaViewHolder=new ObjetosAdapter.ListaViewHolder(itemView);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recicler_item, parent, false);
+        ObjetosAdapter.ListaViewHolder listaViewHolder = new ObjetosAdapter.ListaViewHolder(itemView);
         return listaViewHolder;
     }
 
     @Override
     public void onBindViewHolder(ListaViewHolder holder, int position) {
-        ObjetoMapa objetoMapa=objetos.get(position);
-        holder.bindObjeto(objetoMapa,position);
+        ObjetoMapa2 objetoMapa = objetos.get(position);
+        holder.bindObjeto(objetoMapa, position);
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return objetos.size();
     }
 
-    public class ListaViewHolder extends RecyclerView.ViewHolder{
+    public class ListaViewHolder extends RecyclerView.ViewHolder {
 
         private TextView user;
         private TextView fecha;
@@ -52,16 +53,16 @@ public class ObjetosAdapter extends RecyclerView.Adapter<ObjetosAdapter.ListaVie
         public ListaViewHolder(View itemView) {
             super(itemView);
 
-            user=(TextView)itemView.findViewById(R.id.txtUserComentario);
-            foto=(ImageView)itemView.findViewById(R.id.imageUserComent);
-            fecha=(TextView)itemView.findViewById(R.id.txtFechaComent);
-            comentario=(TextView)itemView.findViewById(R.id.txtComent);
+            user = (TextView) itemView.findViewById(R.id.txtUserComentario);
+            foto = (ImageView) itemView.findViewById(R.id.imageUserComent);
+            fecha = (TextView) itemView.findViewById(R.id.txtFechaComent);
+            comentario = (TextView) itemView.findViewById(R.id.txtComent);
         }
 
-        public void bindObjeto(final ObjetoMapa objeto, final int position){
+        public void bindObjeto(final ObjetoMapa2 objeto, final int position) {
             user.setText(objeto.getNombre_objeto());
-            fecha.setText(objeto.getLatitud()+" , "+objeto.getLongitud());
-            this.comentario.setText(objeto.getDetalles());
+            fecha.setText(objeto.getLatitud() + " ,  " + objeto.getLongitud());
+            comentario.setText(objeto.getDetalles());
         }
 
     }

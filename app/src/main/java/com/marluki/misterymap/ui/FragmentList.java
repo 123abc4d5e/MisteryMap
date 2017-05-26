@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import com.marluki.misterymap.ObjetosAdapter;
 import com.marluki.misterymap.R;
 import com.marluki.misterymap.model.ObjetoMapa;
+import com.marluki.misterymap.model.ObjetoMapa2;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
 
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ public class FragmentList extends Fragment {
     private RecyclerView recyclerView;
     private ObjetosAdapter adapter;
     private ContentResolver resolver;
-    private ObjetoMapa objetoMapa;
+    private ObjetoMapa2 objetoMapa;
 
     public FragmentList() {
         // Required empty public constructor
@@ -45,47 +47,50 @@ public class FragmentList extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        View v = inflater.inflate(R.layout.fragment_fragment_list, container, false);
 
-        Bundle bundle=getArguments();
+        Bundle bundle = getArguments();
 
-        int tipo=bundle.getInt(DatuBaseKontratua.Objetos_mapa.TIPO_ID);
+        int tipo = bundle.getInt(DatuBaseKontratua.Objetos_mapa.TIPO_ID);
         //TODO Conseguir un id
 
-        resolver=getContext().getContentResolver();
+        resolver = getContext().getContentResolver();
 
         Uri uri = DatuBaseKontratua.Objetos_mapa.URI_CONTENT;
         String selection = DatuBaseKontratua.Objetos_mapa.TIPO_ID + " = ?";
         String[] selectionArgs = new String[]{String.valueOf(tipo)};
 
-        Cursor c=resolver.query(uri,null,selection,selectionArgs,null);
-        ArrayList<ObjetoMapa> ObjetoMapaArrayList=new ArrayList<ObjetoMapa>();
+        Cursor c = resolver.query(uri, null, selection, selectionArgs, null);
+        ArrayList<ObjetoMapa2> ObjetoMapaArrayList = new ArrayList<ObjetoMapa2>();
 
-        while(c.moveToNext()){
-        ObjetoMapa objetoMapa=new ObjetoMapa(
-                        c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID)),
-                        c.getInt(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.TIPO_ID)),
-                        c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LATITUD)),
-                        c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LONGITUD)),
-                        c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.USUARIO_ID)),
-                        c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO)),
-                        c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.DETALLES)),
-                         c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.PAIS)),
-                c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.CIUDAD))
-        );
+        while (c.moveToNext()) {
+            objetoMapa = new ObjetoMapa2(
+                    c.getInt(c.getColumnIndex(BaseColumns._ID)),
+                    c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID)),
+                    c.getInt(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.TIPO_ID)),
+                    c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LATITUD)),
+                    c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LONGITUD)),
+                    c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.USUARIO_ID)),
+                    c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO)),
+                    c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.DETALLES)),
+                    c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.PAIS)),
+                    c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.CIUDAD))
+            );
+
             ObjetoMapaArrayList.add(objetoMapa);
 
         }
 
 
-        adapter= new ObjetosAdapter(ObjetoMapaArrayList);
-        recyclerView = (RecyclerView)getView().findViewById(R.id.objetosRecyclerView);
+        adapter = new ObjetosAdapter(ObjetoMapaArrayList);
+        recyclerView = (RecyclerView) v.findViewById(R.id.objetosRecyclerView);
         recyclerView.setAdapter(adapter);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
-        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        return inflater.inflate(R.layout.fragment_fragment_list, container, false);
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -94,8 +99,6 @@ public class FragmentList extends Fragment {
             mListener.onFragmentInteraction(uri);
         }
     }
-
-
 
 
     @Override

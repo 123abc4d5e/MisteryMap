@@ -22,7 +22,8 @@ public class ObjetoMapa2 implements Comparator<ObjetoMapa2> {
     public ObjetoMapa2() {
     }
 
-    public ObjetoMapa2(String id, int tipo_id, Double latitud, Double longitud, String usuario_id, String nombre_objeto, String detalles, String pais, String ciudad) {
+    public ObjetoMapa2(int _id, String id, int tipo_id, Double latitud, Double longitud, String usuario_id, String nombre_objeto, String detalles, String pais, String ciudad) {
+        this._id = _id;
         this.id = id;
         this.tipo_id = tipo_id;
         this.latitud = latitud;

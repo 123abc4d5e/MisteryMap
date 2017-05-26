@@ -149,6 +149,9 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 App.getmInstance().setmGoogleApiClient(mGoogleApiClient);
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra("token", acct.getIdToken());
+                intent.putExtra("correo", acct.getEmail());
+                intent.putExtra(DatuBaseKontratua.Usuarios.FOTO, acct.getPhotoUrl());
+                intent.putExtra(DatuBaseKontratua.Usuarios.NOMBRE, acct.getDisplayName());
                 intent.putExtra(DatuBaseKontratua.Usuarios.ID, acct.getId());
           //      startActivity(FeedActivity.newStartIntent(this, acct.getDisplayName()));
       //          finish();

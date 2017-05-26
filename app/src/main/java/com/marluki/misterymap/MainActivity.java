@@ -28,8 +28,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.FilterQueryProvider;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.Marker;
 import com.marluki.misterymap.model.ObjetoMapa;
@@ -42,13 +45,14 @@ import com.marluki.misterymap.ui.FragmentMapa;
 import com.marluki.misterymap.ui.InsertActivity;
 import com.marluki.misterymap.ui.ObjectFragment;
 import com.marluki.misterymap.view.GoogleApi;
+import com.marluki.misterymap.volley.VolleySingleton;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnClickListener,
         ObjectFragment.OnFragmentInteractionListener, FirstMapFragment.OnFragmentInteractionListener, FragmentMapa.OnMarkerClickListener,
-        FragmentMapa.OnUpdateUIListener, FragmentMapa.OnMapLongClickListener {
+        FragmentMapa.OnUpdateUIListener, FragmentMapa.OnMapLongClickListener, FragmentList.OnFragmentInteractionListener {
 
     private AutoCompleteTextView autoCompleteTextView;
     private ContentResolver resolver;
@@ -63,6 +67,10 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<ObjetoMapa2> arrayObjeto;
     private SimpleCursorAdapter mAdapter;
     private Cursor c;
+    private String userName, userFoto, userEmail;
+    private ImageLoader imageLoader;
+    private TextView txtUser, txtEmail;
+    private NetworkImageView imgUser;
 
     private FloatingActionButton fabOvni;
     private FloatingActionButton fabFantasma;
@@ -77,6 +85,11 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         resolver = getContentResolver();
+        imageLoader = VolleySingleton.getInstance(getApplicationContext()).getImageLoader();
+
+        userName = getIntent().getStringExtra(DatuBaseKontratua.Usuarios.NOMBRE);
+        userEmail = getIntent().getStringExtra("correo");
+        userFoto = getIntent().getStringExtra(DatuBaseKontratua.Usuarios.FOTO);
 
         fabOvni = (FloatingActionButton) findViewById(R.id.fabOvni);
         fabFantasma = (FloatingActionButton) findViewById(R.id.fabFantasma);
@@ -98,6 +111,14 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        txtEmail =(TextView)navigationView.findViewById(R.id.txtUserEmail);
+        txtUser = (TextView)navigationView.findViewById(R.id.txtUserName);
+        imgUser = (NetworkImageView)navigationView.findViewById(R.id.imgUser);
+
+        txtEmail.setText(userEmail);
+        txtUser.setText(userName);
+        imgUser.setImageUrl(userFoto, imageLoader);
 
         fragmentMapa = new FragmentMapa();
         getSupportFragmentManager()
@@ -295,7 +316,7 @@ public class MainActivity extends AppCompatActivity
             // Handle the camera action
 
             Bundle bundle=new Bundle();
-            bundle.putInt("TipoID", 1);
+            bundle.putInt(DatuBaseKontratua.Objetos_mapa.TIPO_ID, 1);
 
             fragmentLista=new FragmentList();
             fragmentLista.setArguments(bundle);
@@ -309,7 +330,7 @@ public class MainActivity extends AppCompatActivity
         else if (id == R.id.nav_fantasma) {
 
             Bundle bundle=new Bundle();
-            bundle.putInt("TipoID", 2);
+            bundle.putInt(DatuBaseKontratua.Objetos_mapa.TIPO_ID, 2);
 
             fragmentLista=new FragmentList();
             fragmentLista.setArguments(bundle);
@@ -322,7 +343,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_sin_resolver) {
 
             Bundle bundle=new Bundle();
-            bundle.putInt("TipoID", 3);
+            bundle.putInt(DatuBaseKontratua.Objetos_mapa.TIPO_ID, 3);
 
             fragmentLista=new FragmentList();
             fragmentLista.setArguments(bundle);
@@ -335,7 +356,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_historico) {
 
             Bundle bundle=new Bundle();
-            bundle.putInt("TipoID", 4);
+            bundle.putInt(DatuBaseKontratua.Objetos_mapa.TIPO_ID, 4);
 
             fragmentLista=new FragmentList();
             fragmentLista.setArguments(bundle);
