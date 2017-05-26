@@ -68,8 +68,11 @@ public class ObjectFragment extends Fragment {
             if (c.moveToFirst()) {
                 objetoMapa = new ObjetoMapa();
                 objetoMapa.setId(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID)));
+                objetoMapa.setDetalles(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.DETALLES)));
+                objetoMapa.setTipo_id(c.getInt(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.TIPO_ID)));
+                objetoMapa.setPais(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.PAIS)));
+                objetoMapa.setCiudad(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.CIUDAD)));
                 objetoMapa.setNombre_objeto(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO)));
-                objetoMapa.setId(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID)));
                 objetoMapa.setLatitud(c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LATITUD)));
                 objetoMapa.setLongitud(c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LONGITUD)));
                 creatorUser = c.getString(c.getColumnIndex(DatuBaseKontratua.Usuarios.NOMBRE));
@@ -89,7 +92,7 @@ public class ObjectFragment extends Fragment {
     }
 
     private void goToDetail() {
-        Intent intent=new Intent(getContext(), DetallesActivity.class);
+    Intent intent=new Intent(getContext(), DetallesActivity.class);
         intent.putExtra("objeto", objetoMapa);
         intent.putExtra(DatuBaseKontratua.Usuarios.NOMBRE, creatorUser);
         intent.putExtra(DatuBaseKontratua.Usuarios.FOTO, cretorImage);

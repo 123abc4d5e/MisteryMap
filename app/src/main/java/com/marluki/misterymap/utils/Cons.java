@@ -171,5 +171,9 @@ public class Cons {
     public static final String createUser = "createUser";
     public static final String deleteUser = "deleteUser";
 
+    public static final String idCliente = "ClienteID";
+    public static final String stiloMapa = "MapStyleLight";
+    public static final String misPreferencias = "MisPreferencias";
+
 
 }

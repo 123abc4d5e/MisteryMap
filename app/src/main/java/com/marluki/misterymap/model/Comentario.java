@@ -79,11 +79,10 @@ public class Comentario {
         boolean b = !c.getId().equals(id) && c.getId() != null;
         boolean b1 = !c.getObjeto_id().equals(objeto_id) && c.getObjeto_id() != null;
         boolean b2 = !c.getUsuario_id().equals(usuario_id) && c.getUsuario_id() != null;
-        boolean b3 = !c.getComentario_id().equals(comentario_id);
         boolean b4 = !c.getFecha().equals(fecha) && c.getFecha() != null;
         boolean b6 = !c.getTexto().equals(texto) && c.getTexto() != null;
 
-        if (b || b1 || b2 || b3 || b4 || b6) return false;
+        if (b || b1 || b2 || b4 || b6) return false;
         else return true;
     }
 }

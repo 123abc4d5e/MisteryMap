@@ -27,6 +27,7 @@ import com.marluki.misterymap.R;
 import com.marluki.misterymap.google.App;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
 import com.marluki.misterymap.sync.SyncHelper;
+import com.marluki.misterymap.utils.Cons;
 
 import static com.marluki.misterymap.sync.SyncHelper.ACCOUNT_REQUEST_CODE;
 import static com.marluki.misterymap.sync.SyncHelper.LOCATION_REQUEST_CODE;
@@ -50,11 +51,11 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
 
 
-        preferences = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
-        if(!preferences.contains("MapStyleLight"))
+        preferences = getSharedPreferences(Cons.misPreferencias, Context.MODE_PRIVATE);
+        if(!preferences.contains(Cons.stiloMapa))
         {
             SharedPreferences.Editor editor = preferences.edit();
-            editor.putBoolean("MapStyleLight", true);
+            editor.putBoolean(Cons.stiloMapa, true);
             editor.commit();
         }
 
@@ -128,16 +129,16 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             if (acct != null) {
 
                 //Metemos el ID del Client en las preferencias.
-                preferences = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
-                if(!preferences.contains("ClienteID"))
+                preferences = getSharedPreferences(Cons.misPreferencias, Context.MODE_PRIVATE);
+                if(!preferences.contains(Cons.idCliente))
                 {
                     SharedPreferences.Editor editor = preferences.edit();
-                    editor.putString("ClienteID", acct.getId());
+                    editor.putString(Cons.idCliente, acct.getId());
                     editor.commit();
-                } else if(preferences.getString("ClienteID", "defaultClienteID").equals(acct.getId()))
+                } else if(preferences.getString(Cons.idCliente, null).equals(acct.getId()))
                 {
                     SharedPreferences.Editor editor = preferences.edit();
-                    editor.putString("ClienteID", acct.getId());
+                    editor.putString(Cons.idCliente, acct.getId());
                     editor.commit();
                 }
 

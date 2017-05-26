@@ -473,37 +473,37 @@ public class MisteryProvider extends ContentProvider {
                 db.insertOrThrow(DatabaseHelper.Tablas.OVNI, null, values);
                 id = values.getAsString(Ovnis.OBJETO_ID);
                 notificarCambio(uri);
-                return Tipos.crearUriTipo(id);
+                return Ovnis.crearUriOvni(id);
             case FANTASMAS:
                 db.insertOrThrow(DatabaseHelper.Tablas.FANTASMA, null, values);
                 id = values.getAsString(Fantasmas.OBJETO_ID);
                 notificarCambio(uri);
-                return Tipos.crearUriTipo(id);
+                return Fantasmas.crearUriFantasma(id);
             case HISTORICOS:
                 db.insertOrThrow(DatabaseHelper.Tablas.HISTORICO, null, values);
                 id = values.getAsString(Historicos.OBJETO_ID);
                 notificarCambio(uri);
-                return Tipos.crearUriTipo(id);
+                return Historicos.crearUriHistorico(id);
             case SIN_RESOLVER:
                 db.insertOrThrow(DatabaseHelper.Tablas.SIN_RESOLVER, null, values);
                 id = values.getAsString(SinResolver.OBJETO_ID);
                 notificarCambio(uri);
-                return Tipos.crearUriTipo(id);
+                return SinResolver.crearUriSinResolver(id);
             case COMENTARIOS:
                 db.insertOrThrow(DatabaseHelper.Tablas.COMENTARIO, null, values);
                 id = values.getAsString(Comentarios.ID);
                 notificarCambio(uri);
-                return Tipos.crearUriTipo(id);
+                return Comentarios.crearUriComentario(id);
             case FOTOS:
                 db.insertOrThrow(DatabaseHelper.Tablas.FOTO, null, values);
                 id = values.getAsString(Fotos.ID);
                 notificarCambio(uri);
-                return Tipos.crearUriTipo(id);
+                return Fotos.crearUriFoto(id);
             case PSICOFONIAS:
                 db.insertOrThrow(DatabaseHelper.Tablas.PSICOFONIA, null, values);
                 id = values.getAsString(Psicofonias.ID);
                 notificarCambio(uri);
-                return Tipos.crearUriTipo(id);
+                return Psicofonias.crearUriPsicofonia(id);
             default:
                 throw new UnsupportedOperationException(URI_NO_SOPORTADA + " =>" + uri);
         }

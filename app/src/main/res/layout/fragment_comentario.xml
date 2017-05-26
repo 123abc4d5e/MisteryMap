@@ -4,14 +4,16 @@
     android:layout_height="200sp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="20sp"
+    android:padding="20sp"
     android:layout_gravity="center_vertical"
+    android:background="@android:color/white"
     tools:context="com.marluki.misterymap.ui.ComentarioFragment">
 
     <TextView
         android:id="@+id/nueviComentario"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Nuevo mensaje"
+        android:text="@string/nuevo_comentario"
         android:gravity="center"/>
 
     <EditText
@@ -31,8 +33,9 @@
         android:id="@+id/comentButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@android:drawable/ic_input_add"
+        app:srcCompat="@drawable/ic_menu_send"
         android:layout_margin="@dimen/fab_margin"
+        android:elevation="5sp"
         android:layout_alignParentBottom="true"
         android:layout_alignEnd="@+id/comentarioTextoMeter" />
 
