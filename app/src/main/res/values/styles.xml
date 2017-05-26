@@ -17,4 +17,43 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+
+
+<!--
+    <style name="TemaAlien">
+        <item name="colorPrimary">@color/Alien_primary</item>
+        <item name="colorPrimaryDark">@color/Alien_primary_dark</item>
+        <item name="textColorPrimary">@color/Alien_primary_text</item>
+        <item name="colorAccent">@color/Alien_accent</item>
+        <item name="textColorSecondary">@color/Alien_seconday_text</item>
+    </style>
+
+    <style name="TemaFantasma" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/Fantasma_primary</item>
+        <item name="colorPrimaryDark">@color/Fantasma_primary_dark</item>
+        <item name="textColorPrimary">@color/Fantasma_primary_text</item>
+        <item name="colorAccent">@color/Fantasma_accent</item>
+        <item name="textColorSecondary">@color/Fantasma_seconday_text</item>
+    </style>
+
+
+
+    <style name="TemaSinResolver" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/SinResolver_primary</item>
+        <item name="colorPrimaryDark">@color/SinResolver_primary_dark</item>
+        <item name="textColorPrimary">@color/SinResolver_primary_text</item>
+        <item name="colorAccent">@color/SinResolver_accent</item>
+        <item name="textColorSecondary">@color/SinResolver_seconday_text</item>
+    </style>
+
+    <style name="TemaHistorico">
+        <item name="colorPrimary">@color/Historico_primary</item>
+        <item name="colorPrimaryDark">@color/Historico_primary_dark</item>
+        <item name="textColorPrimary">@color/Historico_primary_text</item>
+        <item name="colorAccent">@color/Historico_accent</item>
+        <item name="textColorSecondary">@color/Historico_seconday_text</item>
+    </style>
+    -->
+
+
 </resources>
