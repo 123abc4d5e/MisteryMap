@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -53,13 +54,15 @@ public class DetallesActivity extends AppCompatActivity {
 
         while(c.moveToNext()){
             ComentarioViewModel comentarioViewModel=new ComentarioViewModel(
-                    c.getString(c.getColumnIndex("id")),
-                    c.getString(c.getColumnIndex("objeto_id")),
-                    c.getString(c.getColumnIndex("usuario_id")),
-                    c.getString(c.getColumnIndex("comentario_id")),
-                    c.getString(c.getColumnIndex("texto")),
-                    c.getString(c.getColumnIndex("fecha")),
-                    c.getString(c.getColumnIndex("nombre_usuario"))
+                    c.getInt(c.getColumnIndex(BaseColumns._ID)),
+                    c.getString(c.getColumnIndex(DatuBaseKontratua.Comentarios.ID)),
+                    c.getString(c.getColumnIndex(DatuBaseKontratua.Comentarios.OBJETO_ID)),
+                    c.getString(c.getColumnIndex(DatuBaseKontratua.Comentarios.USUARIO_ID)),
+                    c.getString(c.getColumnIndex(DatuBaseKontratua.Comentarios.COMENTARIO_ID)),
+                    c.getString(c.getColumnIndex(DatuBaseKontratua.Comentarios.TEXTO)),
+                    c.getString(c.getColumnIndex(DatuBaseKontratua.Comentarios.FECHA)),
+                    c.getString(c.getColumnIndex(DatuBaseKontratua.Usuarios.NOMBRE)),
+                    c.getString(c.getColumnIndex(DatuBaseKontratua.Usuarios.FOTO))
             );
             comentarioViewModelArrayList.add(comentarioViewModel);
 
