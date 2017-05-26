@@ -6,4 +6,48 @@
     <color name="blueGrey500">#607D8B</color>
     <color name="blueGreyDark">#263238</color>
     <color name="blueGreyLight">#B0BEC5</color>
+
+    <!--    Colores Alien    -->
+
+
+    <color name="Alien_primary">#8BC34A</color>
+    <color name="Alien_primary_dark">#689F38</color>
+    <color name="Alien_primary_light">#DCEDC8</color>
+    <color name="Alien_accent">#4CAF50</color>
+    <color name="Alien_primary_text">#212121</color>
+    <color name="Alien_secondary_text">#757575</color>
+
+
+    <!--	Sin Resolver	-->
+
+    <color name="SinResolver_primary">#c62828</color>
+    <color name="SinResolver_primary_dark">#8e0000</color>
+    <color name="SinResolver_primary_light">#ff5f52</color>
+    <color name="SinResolver_accent">#5d4037</color>
+    <color name="SinResolver_primary_text">#ffffff</color>
+    <color name="SinResolver_secondary_text">#ffffff</color>
+
+
+    <!--	Fantasma	-->
+
+    <color name="Fantasma_primary">#03A9F4</color>
+    <color name="Fantasma_primary_dark">#0288D1</color>
+    <color name="Fantasma_primary_light">#B3E5FC</color>
+    <color name="Fantasma_accent">#00BCD4</color>
+    <color name="Fantasma_primary_text">#212121</color>
+    <color name="Fantasma_secondary_text">#757575</color>
+    <color name="Fantasma_icons">#FFFFFF</color>
+    <color name="Fantasma_divider">#BDBDBD</color>
+
+    <!--	Historico	-->
+
+    <color name="Historico_primary">#9E9E9E</color>
+    <color name="Historico_primary_dark">#616161</color>
+    <color name="Historico_primary_light">#F5F5F5</color>
+    <color name="Historico_accent">#795548</color>
+    <color name="Historico_primary_text">#212121</color>
+    <color name="Historico_secondary_text">#757575</color>
+    <color name="Historico_icons">#212121</color>
+    <color name="Historico_divider">#BDBDBD</color>
+
 </resources>

@@ -1,7 +1,9 @@
 package com.marluki.misterymap.ui;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -32,8 +34,12 @@ import static com.marluki.misterymap.sync.SyncHelper.LOCATION_REQUEST_CODE;
 public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
 
+
+
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
+
+    private SharedPreferences preferences;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -41,6 +47,17 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+
+
+
+        preferences = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        if(!preferences.contains("MapStyleLight"))
+        {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("MapStyleLight", true);
+            editor.commit();
+        }
+
         setUpGoogleApiClient();
 
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
@@ -109,6 +126,23 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             // Signed in successfully.
             GoogleSignInAccount acct = result.getSignInAccount();
             if (acct != null) {
+
+                //Metemos el ID del Client en las preferencias.
+                preferences = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+                if(!preferences.contains("ClienteID"))
+                {
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("ClienteID", acct.getId());
+                    editor.commit();
+                } else if(preferences.getString("ClienteID", "defaultClienteID").equals(acct.getId()))
+                {
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("ClienteID", acct.getId());
+                    editor.commit();
+                }
+
+
+
                 SyncHelper.initializeSync(getApplicationContext(), result.getSignInAccount());
 
                 App.getmInstance().setmGoogleApiClient(mGoogleApiClient);
