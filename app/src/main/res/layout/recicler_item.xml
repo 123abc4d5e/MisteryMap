@@ -4,7 +4,7 @@
     android:layout_height="wrap_content">
 
 
-    <ImageView
+    <com.android.volley.toolbox.NetworkImageView
         android:src="@mipmap/ic_launcher"
         android:id="@+id/imageUserComent"
         android:layout_width="wrap_content"

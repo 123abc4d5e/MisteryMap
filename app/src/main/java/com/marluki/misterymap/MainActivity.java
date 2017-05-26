@@ -2,16 +2,20 @@ package com.marluki.misterymap;
 
 import android.Manifest;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,14 +25,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.FilterQueryProvider;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.Marker;
 import com.marluki.misterymap.model.ObjetoMapa;
+import com.marluki.misterymap.model.ObjetoMapa2;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
 import com.marluki.misterymap.sync.SyncHelper;
 import com.marluki.misterymap.ui.ObjectFragment;
@@ -45,23 +53,22 @@ public class MainActivity extends AppCompatActivity
         FragmentMapa.OnUpdateUIListener, FragmentMapa.OnMapLongClickListener {
 
     private AutoCompleteTextView autoCompleteTextView;
-    private ArrayList<String> suggestions;
-    private SearchAdapter searchAdapter;
     private ContentResolver resolver;
-    private ObjetoMapa objetoMapa;
+    private ObjetoMapa2 objetoMapa;
 
 
     private FragmentMapa fragmentMapa;
     private ObjectFragment mBlankFragment;
     private Marker longMarker;
     private GoogleApi mGoogleApi;
-    private ArrayList<ObjetoMapa> arrayObjeto;
+    private ArrayList<ObjetoMapa2> arrayObjeto;
+    private SimpleCursorAdapter mAdapter;
+    private Cursor c;
 
     private FloatingActionButton fabOvni;
     private FloatingActionButton fabFantasma;
     private FloatingActionButton fabHistorico;
     private FloatingActionButton fabSinResolver;
-    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +100,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //mFirstFirstMapFragment = new FirstMapFragment();
         fragmentMapa = new FragmentMapa();
         getSupportFragmentManager()
                 .beginTransaction()
@@ -106,27 +112,22 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager().getFragment(savedInstanceState, "Fragment");
         }
 
-        //mMap = new Map(this, mGoogleApi);
-
-        //mMap.getMapAsync(mFirstFirstMapFragment);
-        //mFirstFirstMapFragment.getMapAsync(this);
 
         Uri uri=DatuBaseKontratua.Objetos_mapa.URI_CONTENT;
 
         resolver=getContentResolver();
 
-        Cursor c=resolver.query(uri,null,null,null,null);
-        suggestions=new ArrayList<String>();
-        arrayObjeto=new ArrayList<ObjetoMapa>();
+        c=resolver.query(uri,null,null,null,null);
+        arrayObjeto=new ArrayList<ObjetoMapa2>();
 
         while (c.moveToNext()){
-            objetoMapa = new ObjetoMapa();
+            objetoMapa = new ObjetoMapa2();
+            objetoMapa.set_id(c.getInt(c.getColumnIndex("_id")));
             objetoMapa.setNombre_objeto(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO)));
             objetoMapa.setId(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID)));
             objetoMapa.setLatitud(c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LATITUD)));
             objetoMapa.setLongitud(c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LONGITUD)));
             arrayObjeto.add(objetoMapa);
-            suggestions.add(objetoMapa.getNombre_objeto());
         }
 
     }
@@ -176,8 +177,7 @@ public class MainActivity extends AppCompatActivity
                 Location lastLocation =
                         LocationServices.FusedLocationApi.getLastLocation(mGoogleApi.getGoogleApiClient());
 
-                //mMap.addMarkerHistorico(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), "Ultima Posicion Conocida");
-                //mMap.moveCamera(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 12);
+                fragmentMapa.moveToLocation(lastLocation.getLatitude(), lastLocation.getLongitude());
 
 
                 if (lastLocation != null)
@@ -196,12 +196,73 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        final ArrayAdapter<String> adapter=new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_dropdown_item_1line,suggestions);
-        autoCompleteTextView=(AutoCompleteTextView)menu.findItem(R.id.action_search).getActionView().findViewById(R.id.search_box);
-        searchAdapter = new SearchAdapter(getApplicationContext(),arrayObjeto);
-        autoCompleteTextView.setAdapter(adapter);
-        autoCompleteTextView.setThreshold(1);
+
+        mAdapter = new SimpleCursorAdapter(getApplicationContext(),
+                R.layout.suggestion_layout,null, new String[]{DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO},new int[]{R.id.text1}, 0);
+
+        autoCompleteTextView = (AutoCompleteTextView)menu.findItem(R.id.action_search).getActionView().findViewById(R.id.search_box);
+
+
+        autoCompleteTextView.setAdapter(mAdapter);
+        autoCompleteTextView.setThreshold(2);
+        mAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+            @Override
+            public Cursor runQuery(CharSequence constraint) {
+                return getCursor(constraint);
+            }
+        });
+        mAdapter.setCursorToStringConverter(new SimpleCursorAdapter.CursorToStringConverter() {
+            @Override
+            public CharSequence convertToString(Cursor cursor) {
+                int index = cursor.getColumnIndex(DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO);
+                return cursor.getString(index);
+            }
+        });
+        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Double lat = 0.0,lon = 0.0;
+                String selection = "" + BaseColumns._ID + " =?";
+                String[] selectionArgs = new String[]{"" +String.valueOf(id) + ""};
+                Cursor cursor = resolver.query(DatuBaseKontratua.Objetos_mapa.URI_CONTENT, null, selection, selectionArgs,
+                        null);
+                while (cursor.moveToNext()) {
+                    objetoMapa  = new ObjetoMapa2();
+                    objetoMapa.setId(cursor.getString(cursor.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID)));
+                    objetoMapa.setLatitud(cursor.getDouble(cursor.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LATITUD)));
+                    objetoMapa.setLongitud(cursor.getDouble(cursor.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LONGITUD)));
+
+                }
+                fragmentMapa.moveToLocation(objetoMapa.getLatitud(), objetoMapa.getLongitud());
+                hideKeyboard();
+            }
+        });
         return true;
+    }
+    private void hideKeyboard() {
+        View v = this.getCurrentFocus();
+        if (v != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
+    }
+
+    public Cursor getCursor(CharSequence str) {
+        String select = "" + DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO + " LIKE ? ";
+        String[] selectArgs = {"%" + str + "%"};
+
+        Cursor c = resolver.query(DatuBaseKontratua.Objetos_mapa.URI_CONTENT,null,select,selectArgs,null);
+        while (c.moveToNext()) {
+            objetoMapa = new ObjetoMapa2();
+            objetoMapa.set_id(c.getInt(c.getColumnIndex("_id")));
+            objetoMapa.setNombre_objeto(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO)));
+            objetoMapa.setId(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID)));
+            objetoMapa.setLatitud(c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LATITUD)));
+            objetoMapa.setLongitud(c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LONGITUD)));
+            arrayObjeto.add(objetoMapa);
+
+        }
+        return c;
     }
 
     @Override
@@ -214,6 +275,12 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+            case R.id.action_search:
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -320,12 +387,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMarkerClick(String id) {
+    public void onMarkerClick(Marker marker) {
         longMarker = null;
         FragmentManager fm = getSupportFragmentManager();
         mBlankFragment = (ObjectFragment) fm.findFragmentByTag("fragmentA");
+        ObjetoMapa objetoMapa = (ObjetoMapa)marker.getTag();
         Bundle bundle = new Bundle();
-        bundle.putString("name", id);
+        bundle.putString("id", objetoMapa.getId());
         FragmentTransaction transaction = fm.beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_gora, R.anim.slide_behera);
         if (mBlankFragment != null) {

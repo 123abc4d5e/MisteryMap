@@ -62,7 +62,6 @@ public class SearchAdapter extends BaseAdapter implements Filterable{
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-
         holder.autoText.setText(suggestions.get(position).getNombre_objeto());
 
 

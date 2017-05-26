@@ -1,14 +1,14 @@
 package com.marluki.misterymap.model;
 
-import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  * Created by charl on 08/05/2017.
  */
 
-public class ObjetoMapa implements Comparator<ObjetoMapa>, Serializable {
+public class ObjetoMapa2 implements Comparator<ObjetoMapa2> {
 
+    private int _id;
     private String id;
     private int tipo_id;
     private Double latitud;
@@ -19,10 +19,10 @@ public class ObjetoMapa implements Comparator<ObjetoMapa>, Serializable {
     private String pais;
     private String ciudad;
 
-    public ObjetoMapa() {
+    public ObjetoMapa2() {
     }
 
-    public ObjetoMapa(String id, int tipo_id, Double latitud, Double longitud, String usuario_id, String nombre_objeto, String detalles, String pais, String ciudad) {
+    public ObjetoMapa2(String id, int tipo_id, Double latitud, Double longitud, String usuario_id, String nombre_objeto, String detalles, String pais, String ciudad) {
         this.id = id;
         this.tipo_id = tipo_id;
         this.latitud = latitud;
@@ -32,6 +32,14 @@ public class ObjetoMapa implements Comparator<ObjetoMapa>, Serializable {
         this.detalles = detalles;
         this.pais = pais;
         this.ciudad = ciudad;
+    }
+
+    public int get_id() {
+        return _id;
+    }
+
+    public void set_id(int _id) {
+        this._id = _id;
     }
 
     public String getId() {
@@ -107,13 +115,13 @@ public class ObjetoMapa implements Comparator<ObjetoMapa>, Serializable {
     }
 
     @Override
-    public int compare(ObjetoMapa o1, ObjetoMapa o2) {
+    public int compare(ObjetoMapa2 o1, ObjetoMapa2 o2) {
         return o1.getId().compareTo(o2.getId());
     }
 
     @Override
     public boolean equals(Object obj) {
-        ObjetoMapa o = (ObjetoMapa)obj;
+        ObjetoMapa2 o = (ObjetoMapa2)obj;
         boolean b = !o.getId().equals(id) && o.getId() != null;
         boolean b1 = o.getTipo_id() != tipo_id && o.getTipo_id() != 0;
         boolean b2 = o.getLatitud() != latitud && o.getLatitud() != null;
