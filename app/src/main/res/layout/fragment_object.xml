@@ -2,21 +2,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="@android:color/white"
     tools:context="com.marluki.misterymap.ui.ObjectFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <ImageView
-        android:layout_margin="15dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_gallery"/>
     <TextView
         android:id="@+id/txtblank"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="100sp"
         android:gravity="center_vertical"
-        android:textSize="24dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="24sp"
         android:textAlignment="center"
         android:text="@string/hello_blank_fragment" />
 

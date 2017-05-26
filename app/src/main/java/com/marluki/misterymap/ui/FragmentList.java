@@ -15,9 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.marluki.misterymap.ObjetosAdapter;
 import com.marluki.misterymap.R;
-import com.marluki.misterymap.model.ObjetoMapa;
 import com.marluki.misterymap.model.ObjetoMapa2;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
 

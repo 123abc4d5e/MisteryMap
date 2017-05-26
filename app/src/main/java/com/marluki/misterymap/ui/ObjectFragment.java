@@ -1,6 +1,5 @@
 package com.marluki.misterymap.ui;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.marluki.misterymap.DetallesActivity;
 import com.marluki.misterymap.R;
 import com.marluki.misterymap.model.ObjetoMapa;
 import com.marluki.misterymap.provider.DatuBaseKontratua;

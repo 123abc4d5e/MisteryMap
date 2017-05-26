@@ -1,4 +1,4 @@
-package com.marluki.misterymap;
+package com.marluki.misterymap.ui;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
@@ -18,10 +18,10 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
+import com.marluki.misterymap.R;
 import com.marluki.misterymap.model.ComentarioViewModel;
 import com.marluki.misterymap.model.ObjetoMapa;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
-import com.marluki.misterymap.ui.ComentarioFragment;
 import com.marluki.misterymap.volley.VolleySingleton;
 
 import java.util.ArrayList;
@@ -107,7 +107,7 @@ public class DetallesActivity extends AppCompatActivity implements ComentarioFra
             comentarioViewModelArrayList.add(comentarioViewModel);
 
         }
-        CursorRecyclerAdapter adapter = new CursorRecyclerAdapter(comentarioViewModelArrayList);
+        ComentarioAdapter adapter = new ComentarioAdapter(comentarioViewModelArrayList);
 
         recyclerView.setAdapter(adapter);
 

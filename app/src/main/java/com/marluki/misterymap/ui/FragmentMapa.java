@@ -11,19 +11,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,7 +25,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.marluki.misterymap.MainActivity;
 import com.marluki.misterymap.R;
 import com.marluki.misterymap.model.ObjetoMapa;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
@@ -219,6 +211,17 @@ public class FragmentMapa extends SupportMapFragment implements OnMapReadyCallba
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat, lon)));
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
     }
+
+    public void moveToLocation(Double lat, Double lon, boolean bol) {
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat, lon)));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+        if(bol) {
+            longMarker = googleMap.addMarker(new MarkerOptions().title("Nueva Posición").position(new LatLng(lat, lon)).draggable(true));
+            uiListener.onUpdateUI(longMarker);
+        }
+    }
+
+
 
 
 

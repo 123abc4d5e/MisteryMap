@@ -8,17 +8,17 @@
     android:background="@color/colorPrimary"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical">
+        android:layout_gravity="center" >
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
             android:layout_gravity="center"
-            android:background="@drawable/ic_menu_gallery" />
+            android:background="@drawable/launcher" />
 
         <TextView
             android:id="@+id/status"
@@ -29,7 +29,9 @@
             android:id="@+id/sign_in_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:buttonSize="wide" />
-    </LinearLayout>
+            app:buttonSize="wide"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="67sp" />
+    </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

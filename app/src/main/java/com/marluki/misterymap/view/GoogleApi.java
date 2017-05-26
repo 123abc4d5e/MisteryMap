@@ -10,7 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.widget.Toast;
+import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -28,6 +28,7 @@ public class GoogleApi implements GoogleApiClient.ConnectionCallbacks, GoogleApi
     private Location lastKnownLocation;
     private static final int PETICION_PERMISO_LOCALIZACION = 60;
     private FragmentActivity activity;
+    private final String TAG = "GoogleLocationApi";
 
 
     public GoogleApi(Context context, FragmentActivity fragmentActivity, Activity activity)
@@ -61,7 +62,7 @@ public class GoogleApi implements GoogleApiClient.ConnectionCallbacks, GoogleApi
             if(lastLocation != null)
                 updateLocation(lastLocation);
             else
-                Toast.makeText(context, "lastLocation está vacío", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "lastLocation está vacío");
         }
     }
 
@@ -75,7 +76,7 @@ public class GoogleApi implements GoogleApiClient.ConnectionCallbacks, GoogleApi
         //Se ha producido un error que no se puede resolver automáticamente
         //y la conexión con los Google Play Services no se ha establecido.
 
-        Toast.makeText(context, "Error grave al conectar con Google Play Services", Toast.LENGTH_LONG);
+        Log.d(TAG, "Error grave al conectar con Google Play Services");
     }
 
 
@@ -83,8 +84,7 @@ public class GoogleApi implements GoogleApiClient.ConnectionCallbacks, GoogleApi
     {
         lastKnownLocation = loc;
 
-        Toast.makeText(context, "Ultima Ubicacion Conocida:\n" +
-                "Latitud: "+lastKnownLocation.getLatitude()+"\tLongitud: "+lastKnownLocation.getLongitude(), Toast.LENGTH_LONG).show();
+        Log.d(TAG,"Latitud: " + lastKnownLocation.getLatitude() + "Longitud: " + lastKnownLocation.getLongitude());
     }
 
 

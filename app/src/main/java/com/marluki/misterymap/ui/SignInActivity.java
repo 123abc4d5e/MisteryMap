@@ -22,7 +22,6 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
-import com.marluki.misterymap.MainActivity;
 import com.marluki.misterymap.R;
 import com.marluki.misterymap.google.App;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
@@ -150,7 +149,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra("token", acct.getIdToken());
                 intent.putExtra("correo", acct.getEmail());
-                intent.putExtra(DatuBaseKontratua.Usuarios.FOTO, acct.getPhotoUrl());
+                intent.putExtra(DatuBaseKontratua.Usuarios.FOTO, acct.getPhotoUrl().toString());
                 intent.putExtra(DatuBaseKontratua.Usuarios.NOMBRE, acct.getDisplayName());
                 intent.putExtra(DatuBaseKontratua.Usuarios.ID, acct.getId());
           //      startActivity(FeedActivity.newStartIntent(this, acct.getDisplayName()));

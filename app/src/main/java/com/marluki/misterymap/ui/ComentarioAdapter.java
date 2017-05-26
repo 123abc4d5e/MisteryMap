@@ -1,36 +1,32 @@
-package com.marluki.misterymap;
+package com.marluki.misterymap.ui;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.DataSetObserver;
-import android.support.v4.content.res.ConfigurationHelper;
-import android.support.v4.view.LayoutInflaterCompat;
-import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
-import com.marluki.misterymap.model.Comentario;
+import com.marluki.misterymap.R;
 import com.marluki.misterymap.model.ComentarioViewModel;
 import com.marluki.misterymap.volley.VolleySingleton;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by lu_lu_000 on 25/05/2017.
  */
 
-public class CursorRecyclerAdapter extends RecyclerView.Adapter<CursorRecyclerAdapter.ListaViewHolder>{
+public class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.ListaViewHolder>{
 
     private ArrayList<ComentarioViewModel> comentarios;
 
-    public CursorRecyclerAdapter(ArrayList<ComentarioViewModel> comentarios){
+    public ComentarioAdapter(ArrayList<ComentarioViewModel> comentarios){
         this.comentarios=comentarios;
     }
 
@@ -72,9 +68,19 @@ public class CursorRecyclerAdapter extends RecyclerView.Adapter<CursorRecyclerAd
             comentario=(TextView)itemView.findViewById(R.id.txtComent);
         }
 
-        public void bindComentario(final ComentarioViewModel comentarioViewModel,final int position){
+        public void bindComentario(final ComentarioViewModel comentarioViewModel,final int position) {
             user.setText(comentarioViewModel.getNombre_usuario());
-            fecha.setText(comentarioViewModel.getFecha());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = null;
+            try {
+                date = simpleDateFormat.parse(comentarioViewModel.getFecha());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            SimpleDateFormat simpleDateFormat2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            fecha.setText(simpleDateFormat2.format(date));
             comentario.setText(comentarioViewModel.getTexto());
             foto.setImageUrl(comentarioViewModel.getFoto(), imageLoader);
 

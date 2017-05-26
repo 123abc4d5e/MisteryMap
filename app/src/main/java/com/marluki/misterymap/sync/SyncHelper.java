@@ -3,42 +3,23 @@ package com.marluki.misterymap.sync;
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SyncRequest;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.marluki.misterymap.MainActivity;
 import com.marluki.misterymap.R;
-import com.marluki.misterymap.model.Usuario;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
-import com.marluki.misterymap.ui.SignInActivity;
 import com.marluki.misterymap.utils.Cons;
-import com.marluki.misterymap.utils.Utils;
-import com.marluki.misterymap.view.SignInResolutionActivity;
-import com.marluki.misterymap.volley.VolleySingleton;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by charl on 12/05/2017.

@@ -1,4 +1,4 @@
-package com.marluki.misterymap;
+package com.marluki.misterymap.ui;
 
 import android.Manifest;
 import android.content.ContentResolver;
@@ -21,6 +21,8 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,17 +31,16 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.FilterQueryProvider;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.Marker;
+import com.marluki.misterymap.R;
 import com.marluki.misterymap.model.ObjetoMapa;
 import com.marluki.misterymap.model.ObjetoMapa2;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
 import com.marluki.misterymap.sync.SyncHelper;
-import com.marluki.misterymap.ui.FirstMapFragment;
 import com.marluki.misterymap.ui.FragmentList;
 import com.marluki.misterymap.ui.FragmentMapa;
 import com.marluki.misterymap.ui.InsertActivity;
@@ -48,10 +49,12 @@ import com.marluki.misterymap.view.GoogleApi;
 import com.marluki.misterymap.volley.VolleySingleton;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnClickListener,
-        ObjectFragment.OnFragmentInteractionListener, FirstMapFragment.OnFragmentInteractionListener, FragmentMapa.OnMarkerClickListener,
+        ObjectFragment.OnFragmentInteractionListener, FragmentMapa.OnMarkerClickListener,
         FragmentMapa.OnUpdateUIListener, FragmentMapa.OnMapLongClickListener, FragmentList.OnFragmentInteractionListener {
 
     private AutoCompleteTextView autoCompleteTextView;
@@ -112,9 +115,11 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        txtEmail =(TextView)navigationView.findViewById(R.id.txtUserEmail);
-        txtUser = (TextView)navigationView.findViewById(R.id.txtUserName);
-        imgUser = (NetworkImageView)navigationView.findViewById(R.id.imgUser);
+        View v = navigationView.getHeaderView(0);
+
+        txtEmail = (TextView) v.findViewById(R.id.txtUserEmail);
+        txtUser = (TextView) v.findViewById(R.id.txtUserName);
+        imgUser = (NetworkImageView) v.findViewById(R.id.imgUser);
 
         txtEmail.setText(userEmail);
         txtUser.setText(userName);
@@ -128,19 +133,19 @@ public class MainActivity extends AppCompatActivity
 
         mGoogleApi = new GoogleApi(this, this, this);
 
-        if (savedInstanceState!=null){
+        if (savedInstanceState != null) {
             getSupportFragmentManager().getFragment(savedInstanceState, "Fragment");
         }
 
 
-        Uri uri=DatuBaseKontratua.Objetos_mapa.URI_CONTENT;
+        Uri uri = DatuBaseKontratua.Objetos_mapa.URI_CONTENT;
 
-        resolver=getContentResolver();
+        resolver = getContentResolver();
 
-        c=resolver.query(uri,null,null,null,null);
-        arrayObjeto=new ArrayList<ObjetoMapa2>();
+        c = resolver.query(uri, null, null, null, null);
+        arrayObjeto = new ArrayList<ObjetoMapa2>();
 
-        while (c.moveToNext()){
+        while (c.moveToNext()) {
             objetoMapa = new ObjetoMapa2();
             objetoMapa.set_id(c.getInt(c.getColumnIndex("_id")));
             objetoMapa.setNombre_objeto(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO)));
@@ -207,7 +212,7 @@ public class MainActivity extends AppCompatActivity
                 //Permiso denegado:
                 //Deberíamos deshabilitar toda la funcionalidad relativa a la localización.
 
-                Toast.makeText(getApplicationContext(), "Permiso Denegado!", Toast.LENGTH_SHORT).show();
+                Log.d("MainActivity", "Permiso Denegado!");
             }
         }
     }
@@ -218,9 +223,9 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.main, menu);
 
         mAdapter = new SimpleCursorAdapter(getApplicationContext(),
-                R.layout.suggestion_layout,null, new String[]{DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO},new int[]{R.id.text1}, 0);
+                R.layout.suggestion_layout, null, new String[]{DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO}, new int[]{R.id.text1}, 0);
 
-        autoCompleteTextView = (AutoCompleteTextView)menu.findItem(R.id.action_search).getActionView().findViewById(R.id.search_box);
+        autoCompleteTextView = (AutoCompleteTextView) menu.findItem(R.id.action_search).getActionView().findViewById(R.id.search_box);
 
 
         autoCompleteTextView.setAdapter(mAdapter);
@@ -238,16 +243,32 @@ public class MainActivity extends AppCompatActivity
                 return cursor.getString(index);
             }
         });
+        autoCompleteTextView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == 66) {
+                    String msg = ((AutoCompleteTextView) v).getText().toString();
+                    Pattern p = Pattern.compile("^(\\-?\\d+(\\.\\d+)?),\\s*(\\-?\\d+(\\.\\d+)?)$");
+                    Matcher m = p.matcher(msg);
+                    if (m.matches()) {
+                        String[] latlon = msg.split(",");
+                        fragmentMapa.moveToLocation(Double.parseDouble(latlon[0]), Double.parseDouble(latlon[1]));
+                        hideKeyboard();
+                    }
+                }
+                return true;
+            }
+        });
         autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Double lat = 0.0,lon = 0.0;
+                Double lat = 0.0, lon = 0.0;
                 String selection = "" + BaseColumns._ID + " =?";
-                String[] selectionArgs = new String[]{"" +String.valueOf(id) + ""};
+                String[] selectionArgs = new String[]{"" + String.valueOf(id) + ""};
                 Cursor cursor = resolver.query(DatuBaseKontratua.Objetos_mapa.URI_CONTENT, null, selection, selectionArgs,
                         null);
                 while (cursor.moveToNext()) {
-                    objetoMapa  = new ObjetoMapa2();
+                    objetoMapa = new ObjetoMapa2();
                     objetoMapa.setId(cursor.getString(cursor.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID)));
                     objetoMapa.setLatitud(cursor.getDouble(cursor.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LATITUD)));
                     objetoMapa.setLongitud(cursor.getDouble(cursor.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LONGITUD)));
@@ -259,6 +280,7 @@ public class MainActivity extends AppCompatActivity
         });
         return true;
     }
+
     private void hideKeyboard() {
         View v = this.getCurrentFocus();
         if (v != null) {
@@ -271,7 +293,7 @@ public class MainActivity extends AppCompatActivity
         String select = "" + DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO + " LIKE ? ";
         String[] selectArgs = {"%" + str + "%"};
 
-        Cursor c = resolver.query(DatuBaseKontratua.Objetos_mapa.URI_CONTENT,null,select,selectArgs,null);
+        Cursor c = resolver.query(DatuBaseKontratua.Objetos_mapa.URI_CONTENT, null, select, selectArgs, null);
         while (c.moveToNext()) {
             objetoMapa = new ObjetoMapa2();
             objetoMapa.set_id(c.getInt(c.getColumnIndex("_id")));
@@ -315,54 +337,52 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_alien) {
             // Handle the camera action
 
-            Bundle bundle=new Bundle();
+            Bundle bundle = new Bundle();
             bundle.putInt(DatuBaseKontratua.Objetos_mapa.TIPO_ID, 1);
 
-            fragmentLista=new FragmentList();
+            fragmentLista = new FragmentList();
             fragmentLista.setArguments(bundle);
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.map,fragmentLista);
+            ft.replace(R.id.map, fragmentLista);
             ft.addToBackStack(null);
             ft.commit();
-        }
+        } else if (id == R.id.nav_fantasma) {
 
-        else if (id == R.id.nav_fantasma) {
-
-            Bundle bundle=new Bundle();
+            Bundle bundle = new Bundle();
             bundle.putInt(DatuBaseKontratua.Objetos_mapa.TIPO_ID, 2);
 
-            fragmentLista=new FragmentList();
+            fragmentLista = new FragmentList();
             fragmentLista.setArguments(bundle);
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.map,fragmentLista);
+            ft.replace(R.id.map, fragmentLista);
             ft.addToBackStack(null);
             ft.commit();
 
         } else if (id == R.id.nav_sin_resolver) {
 
-            Bundle bundle=new Bundle();
+            Bundle bundle = new Bundle();
             bundle.putInt(DatuBaseKontratua.Objetos_mapa.TIPO_ID, 3);
 
-            fragmentLista=new FragmentList();
+            fragmentLista = new FragmentList();
             fragmentLista.setArguments(bundle);
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.map,fragmentLista);
+            ft.replace(R.id.map, fragmentLista);
             ft.addToBackStack(null);
             ft.commit();
 
         } else if (id == R.id.nav_historico) {
 
-            Bundle bundle=new Bundle();
+            Bundle bundle = new Bundle();
             bundle.putInt(DatuBaseKontratua.Objetos_mapa.TIPO_ID, 4);
 
-            fragmentLista=new FragmentList();
+            fragmentLista = new FragmentList();
             fragmentLista.setArguments(bundle);
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.map,fragmentLista);
+            ft.replace(R.id.map, fragmentLista);
             ft.addToBackStack(null);
             ft.commit();
 
@@ -457,7 +477,7 @@ public class MainActivity extends AppCompatActivity
         longMarker = null;
         FragmentManager fm = getSupportFragmentManager();
         mBlankFragment = (ObjectFragment) fm.findFragmentByTag("fragmentA");
-        ObjetoMapa objetoMapa = (ObjetoMapa)marker.getTag();
+        ObjetoMapa objetoMapa = (ObjetoMapa) marker.getTag();
         Bundle bundle = new Bundle();
         bundle.putString("id", objetoMapa.getId());
         FragmentTransaction transaction = fm.beginTransaction();

@@ -8,12 +8,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -23,6 +20,7 @@ import com.marluki.misterymap.utils.Cons;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 
 
@@ -73,7 +71,8 @@ public class ComentarioFragment extends Fragment {
                 Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-                fecha = simpleDateFormat.format(calendar.getTime());
+                Date date = Calendar.getInstance().getTime();
+                fecha = simpleDateFormat.format(date);
 
                 resolver = getActivity().getContentResolver();
                 Uri uri = DatuBaseKontratua.Comentarios.URI_CONTENT;

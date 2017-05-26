@@ -47,6 +47,8 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="@string/insert_dia"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:inputType="date" />
         </android.support.design.widget.TextInputLayout>
 
@@ -60,6 +62,8 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="@string/insert_hora"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:inputType="time" />
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>

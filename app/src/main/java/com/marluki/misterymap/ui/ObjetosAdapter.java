@@ -1,4 +1,4 @@
-package com.marluki.misterymap;
+package com.marluki.misterymap.ui;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.marluki.misterymap.model.ObjetoMapa;
+import com.marluki.misterymap.R;
 import com.marluki.misterymap.model.ObjetoMapa2;
 
 import java.util.ArrayList;
