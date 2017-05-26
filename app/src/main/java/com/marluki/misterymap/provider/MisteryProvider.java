@@ -490,8 +490,8 @@ public class MisteryProvider extends ContentProvider {
                 notificarCambio(uri);
                 return Tipos.crearUriTipo(id);
             case COMENTARIOS:
-                db.insertOrThrow(DatabaseHelper.Tablas.USUARIO, null, values);
-                id = values.getAsString(Usuarios.ID);
+                db.insertOrThrow(DatabaseHelper.Tablas.COMENTARIO, null, values);
+                id = values.getAsString(Comentarios.ID);
                 notificarCambio(uri);
                 return Tipos.crearUriTipo(id);
             case FOTOS:
@@ -537,7 +537,7 @@ public class MisteryProvider extends ContentProvider {
                 builder.setTables(OBJETO_MAPA_JOIN_USUARIO_Y_TIPO);
                 //Consultando todos los objetos
                 c = builder.query(db, proyObjetos,
-                        Objetos_mapa.ID + "=" + "\'" + id + "\'"
+                        DatabaseHelper.Tablas.OBJETO_MAPA + "." + Objetos_mapa.ID + "=" + "\'" + id + "\'"
                                 + (!TextUtils.isEmpty(selection) ?
                                 " AND (" + selection + ')' : ""),
                         selectionArgs, null, null, null);
@@ -587,8 +587,7 @@ public class MisteryProvider extends ContentProvider {
                 builder.setTables(OBJETO_MAPA_JOIN_COMENTARIO_JOIN_USUARIO);
                 //Consultando todos los objetos
                 c = builder.query(db, proyObjComentario,
-                        "(" + Comentarios.OBJETO_ID + "=" + "\'" + id + "\'" +
-                                " AND " + Comentarios.COMENTARIO_ID + "=NULL)"
+                        Comentarios.OBJETO_ID + "=" + "\'" + id + "\'"
                                 + (!TextUtils.isEmpty(selection) ?
                                 " AND (" + selection + ')' : ""),
                         selectionArgs, null, null, null);

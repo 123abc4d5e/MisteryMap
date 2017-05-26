@@ -1,7 +1,9 @@
 package com.marluki.misterymap.ui;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +15,8 @@ import android.widget.TextView;
 
 import com.marluki.misterymap.DetallesActivity;
 import com.marluki.misterymap.R;
+import com.marluki.misterymap.model.ObjetoMapa;
+import com.marluki.misterymap.provider.DatuBaseKontratua;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,7 +28,11 @@ public class ObjectFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private TextView txt;
-    String name;
+    private static String id;
+    Cursor c;
+    ObjetoMapa objetoMapa;
+    String creatorUser;
+    String cretorImage;
 
     public ObjectFragment() {
         // Required empty public constructor
@@ -52,23 +60,40 @@ public class ObjectFragment extends Fragment {
 
         txt = (TextView) view.findViewById(R.id.txtblank);
         Bundle bundle = getArguments();
+
         if(bundle!=null) {
-            name = bundle.getString("name");
-            if(name!=null)
-               txt.setText(name.toString());
+            id = bundle.getString("id");
+            if(id!=null)
+                c = getActivity().getContentResolver().query(DatuBaseKontratua.Objetos_mapa.crearUriObjetoMapa(id), null, null, null, null);
+            if (c.moveToFirst()) {
+                objetoMapa = new ObjetoMapa();
+                objetoMapa.setId(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID)));
+                objetoMapa.setNombre_objeto(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.NOMBRE_OBJETO)));
+                objetoMapa.setId(c.getString(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.ID)));
+                objetoMapa.setLatitud(c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LATITUD)));
+                objetoMapa.setLongitud(c.getDouble(c.getColumnIndex(DatuBaseKontratua.Objetos_mapa.LONGITUD)));
+                creatorUser = c.getString(c.getColumnIndex(DatuBaseKontratua.Usuarios.NOMBRE));
+                cretorImage = c.getString(c.getColumnIndex(DatuBaseKontratua.Usuarios.FOTO));
+            }
+               txt.setText(objetoMapa.getNombre_objeto());
         }
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(getContext(), DetallesActivity.class);
-                Bundle bundle=new Bundle();
-                bundle.putString("id",name);
-                startActivity(intent,bundle);
+                goToDetail();
             }
         });
 
         return view;
+    }
+
+    private void goToDetail() {
+        Intent intent=new Intent(getContext(), DetallesActivity.class);
+        intent.putExtra("objeto", objetoMapa);
+        intent.putExtra(DatuBaseKontratua.Usuarios.NOMBRE, creatorUser);
+        intent.putExtra(DatuBaseKontratua.Usuarios.FOTO, cretorImage);
+        startActivity(intent);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

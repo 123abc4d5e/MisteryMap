@@ -39,18 +39,17 @@ import com.marluki.misterymap.model.ObjetoMapa;
 import com.marluki.misterymap.model.ObjetoMapa2;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
 import com.marluki.misterymap.sync.SyncHelper;
-import com.marluki.misterymap.ui.BlankFragment;
+import com.marluki.misterymap.ui.ObjectFragment;
 import com.marluki.misterymap.ui.FirstMapFragment;
 import com.marluki.misterymap.ui.FragmentMapa;
 import com.marluki.misterymap.ui.InsertActivity;
 import com.marluki.misterymap.view.GoogleApi;
-import com.marluki.misterymap.volley.ObjetoAdapter;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnClickListener,
-        BlankFragment.OnFragmentInteractionListener, FirstMapFragment.OnFragmentInteractionListener, FragmentMapa.OnMarkerClickListener,
+        ObjectFragment.OnFragmentInteractionListener, FirstMapFragment.OnFragmentInteractionListener, FragmentMapa.OnMarkerClickListener,
         FragmentMapa.OnUpdateUIListener, FragmentMapa.OnMapLongClickListener {
 
     private AutoCompleteTextView autoCompleteTextView;
@@ -59,7 +58,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private FragmentMapa fragmentMapa;
-    private BlankFragment mBlankFragment;
+    private ObjectFragment mBlankFragment;
     private Marker longMarker;
     private GoogleApi mGoogleApi;
     private ArrayList<ObjetoMapa2> arrayObjeto;
@@ -388,22 +387,23 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMarkerClick(String id) {
+    public void onMarkerClick(Marker marker) {
         longMarker = null;
         FragmentManager fm = getSupportFragmentManager();
-        mBlankFragment = (BlankFragment) fm.findFragmentByTag("fragmentA");
+        mBlankFragment = (ObjectFragment) fm.findFragmentByTag("fragmentA");
+        ObjetoMapa objetoMapa = (ObjetoMapa)marker.getTag();
         Bundle bundle = new Bundle();
-        bundle.putString("name", id);
+        bundle.putString("id", objetoMapa.getId());
         FragmentTransaction transaction = fm.beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_gora, R.anim.slide_behera);
         if (mBlankFragment != null) {
 
-            mBlankFragment = BlankFragment.newInstance();
+            mBlankFragment = ObjectFragment.newInstance();
             mBlankFragment.setArguments(bundle);
             transaction.replace(R.id.content_main, mBlankFragment, "fragmentA");
         } else {
 
-            mBlankFragment = BlankFragment.newInstance();
+            mBlankFragment = ObjectFragment.newInstance();
             mBlankFragment.setArguments(bundle);
             transaction.add(R.id.content_main, mBlankFragment, "fragmentA");
 

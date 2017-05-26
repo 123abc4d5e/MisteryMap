@@ -1,12 +1,13 @@
 package com.marluki.misterymap.model;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  * Created by charl on 08/05/2017.
  */
 
-public class ObjetoMapa implements Comparator<ObjetoMapa> {
+public class ObjetoMapa implements Comparator<ObjetoMapa>, Serializable {
 
     private String id;
     private int tipo_id;

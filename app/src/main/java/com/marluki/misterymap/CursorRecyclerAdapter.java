@@ -13,8 +13,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.marluki.misterymap.model.Comentario;
 import com.marluki.misterymap.model.ComentarioViewModel;
+import com.marluki.misterymap.volley.VolleySingleton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,21 +57,27 @@ public class CursorRecyclerAdapter extends RecyclerView.Adapter<CursorRecyclerAd
         private TextView user;
         private TextView fecha;
         private TextView comentario;
-        private ImageView foto;
+        private NetworkImageView foto;
+        private ImageLoader imageLoader;
 
         public ListaViewHolder(View itemView) {
             super(itemView);
 
+            imageLoader = VolleySingleton.getInstance(itemView.getContext())
+                    .getImageLoader();
+
             user=(TextView)itemView.findViewById(R.id.txtUserComentario);
-            foto=(ImageView)itemView.findViewById(R.id.imageUserComent);
+            foto=(NetworkImageView) itemView.findViewById(R.id.imageUserComent);
             fecha=(TextView)itemView.findViewById(R.id.txtFechaComent);
             comentario=(TextView)itemView.findViewById(R.id.txtComent);
         }
 
-        public void bindComentario(final ComentarioViewModel comentario,final int position){
-            user.setText(comentario.getNombre_usuario());
-            fecha.setText(comentario.getFecha());
-            this.comentario.setText(comentario.getTexto());
+        public void bindComentario(final ComentarioViewModel comentarioViewModel,final int position){
+            user.setText(comentarioViewModel.getNombre_usuario());
+            fecha.setText(comentarioViewModel.getFecha());
+            comentario.setText(comentarioViewModel.getTexto());
+            foto.setImageUrl(comentarioViewModel.getFoto(), imageLoader);
+
         }
 
     }

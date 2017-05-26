@@ -175,7 +175,7 @@ public class FragmentMapa extends SupportMapFragment implements OnMapReadyCallba
                     uiListener.onUpdateUI(longMarker);
 
                 ObjetoMapa objetoMapa = (ObjetoMapa) marker.getTag();
-                markerClickListener.onMarkerClick(objetoMapa.getNombre_objeto());
+                markerClickListener.onMarkerClick(marker);
 
                 return true;
             }
@@ -212,7 +212,7 @@ public class FragmentMapa extends SupportMapFragment implements OnMapReadyCallba
     }
 
     public interface OnMarkerClickListener {
-        void onMarkerClick(String id);
+        void onMarkerClick(Marker marker);
     }
 
     public void moveToLocation(Double lat, Double lon) {
