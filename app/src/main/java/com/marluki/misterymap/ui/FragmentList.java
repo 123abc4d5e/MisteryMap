@@ -48,14 +48,16 @@ public class FragmentList extends Fragment {
 
         Bundle bundle=getArguments();
 
-        String uriString=bundle.getString("uriString");
+        int tipo=bundle.getInt(DatuBaseKontratua.Objetos_mapa.TIPO_ID);
         //TODO Conseguir un id
 
         resolver=getContext().getContentResolver();
 
-        Uri uri = Uri.parse(uriString);
+        Uri uri = DatuBaseKontratua.Objetos_mapa.URI_CONTENT;
+        String selection = DatuBaseKontratua.Objetos_mapa.TIPO_ID + " = ?";
+        String[] selectionArgs = new String[]{String.valueOf(tipo)};
 
-        Cursor c=resolver.query(uri,null,null,null,null);
+        Cursor c=resolver.query(uri,null,selection,selectionArgs,null);
         ArrayList<ObjetoMapa> ObjetoMapaArrayList=new ArrayList<ObjetoMapa>();
 
         while(c.moveToNext()){

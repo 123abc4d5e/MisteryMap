@@ -11,24 +11,21 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Adapter;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.FilterQueryProvider;
 import android.widget.Toast;
@@ -39,10 +36,11 @@ import com.marluki.misterymap.model.ObjetoMapa;
 import com.marluki.misterymap.model.ObjetoMapa2;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
 import com.marluki.misterymap.sync.SyncHelper;
-import com.marluki.misterymap.ui.ObjectFragment;
 import com.marluki.misterymap.ui.FirstMapFragment;
+import com.marluki.misterymap.ui.FragmentList;
 import com.marluki.misterymap.ui.FragmentMapa;
 import com.marluki.misterymap.ui.InsertActivity;
+import com.marluki.misterymap.ui.ObjectFragment;
 import com.marluki.misterymap.view.GoogleApi;
 
 import java.util.ArrayList;
@@ -57,6 +55,7 @@ public class MainActivity extends AppCompatActivity
     private ObjetoMapa2 objetoMapa;
 
 
+    private FragmentList fragmentLista;
     private FragmentMapa fragmentMapa;
     private ObjectFragment mBlankFragment;
     private Marker longMarker;
@@ -294,11 +293,57 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_alien) {
             // Handle the camera action
-        } else if (id == R.id.nav_fantasma) {
+
+            Bundle bundle=new Bundle();
+            bundle.putInt("TipoID", 1);
+
+            fragmentLista=new FragmentList();
+            fragmentLista.setArguments(bundle);
+
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.map,fragmentLista);
+            ft.addToBackStack(null);
+            ft.commit();
+        }
+
+        else if (id == R.id.nav_fantasma) {
+
+            Bundle bundle=new Bundle();
+            bundle.putInt("TipoID", 2);
+
+            fragmentLista=new FragmentList();
+            fragmentLista.setArguments(bundle);
+
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.map,fragmentLista);
+            ft.addToBackStack(null);
+            ft.commit();
 
         } else if (id == R.id.nav_sin_resolver) {
 
+            Bundle bundle=new Bundle();
+            bundle.putInt("TipoID", 3);
+
+            fragmentLista=new FragmentList();
+            fragmentLista.setArguments(bundle);
+
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.map,fragmentLista);
+            ft.addToBackStack(null);
+            ft.commit();
+
         } else if (id == R.id.nav_historico) {
+
+            Bundle bundle=new Bundle();
+            bundle.putInt("TipoID", 4);
+
+            fragmentLista=new FragmentList();
+            fragmentLista.setArguments(bundle);
+
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.map,fragmentLista);
+            ft.addToBackStack(null);
+            ft.commit();
 
         } else if (id == R.id.nav_share) {
 
