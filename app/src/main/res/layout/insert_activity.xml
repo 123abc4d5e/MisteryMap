@@ -18,6 +18,7 @@
                 android:id="@+id/txtNombre"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/primary_text_light"
                 android:ems="10"
                 android:hint="@string/insert_nombre"
                 android:inputType="textPersonName" />
@@ -31,6 +32,7 @@
                 android:id="@+id/txtDetalles"
                 android:layout_width="match_parent"
                 android:layout_height="200sp"
+                android:textColor="@android:color/primary_text_light"
                 android:ems="10"
                 android:hint="@string/insert_detalles"
                 android:inputType="textMultiLine" />
@@ -48,6 +50,7 @@
                 android:ems="10"
                 android:hint="@string/insert_dia"
                 android:focusable="false"
+                android:textColor="@android:color/primary_text_light"
                 android:focusableInTouchMode="false"
                 android:inputType="date" />
         </android.support.design.widget.TextInputLayout>
@@ -62,6 +65,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="@string/insert_hora"
+                android:textColor="@android:color/primary_text_light"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:inputType="time" />

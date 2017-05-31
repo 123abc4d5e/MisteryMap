@@ -590,7 +590,8 @@ public class MisteryProvider extends ContentProvider {
                         Comentarios.OBJETO_ID + "=" + "\'" + id + "\'"
                                 + (!TextUtils.isEmpty(selection) ?
                                 " AND (" + selection + ')' : ""),
-                        selectionArgs, null, null, null);
+                        selectionArgs, null, null,
+                        DatabaseHelper.Tablas.COMENTARIO + "." + Comentarios.FECHA);
                 break;
             case OBJETOS_ID_FOTOS:
                 id = Objetos_mapa.obtenerIdObjetoMapa(uri);

@@ -202,11 +202,12 @@ public class MainActivity extends AppCompatActivity
                 Location lastLocation =
                         LocationServices.FusedLocationApi.getLastLocation(mGoogleApi.getGoogleApiClient());
 
-                fragmentMapa.moveToLocation(lastLocation.getLatitude(), lastLocation.getLongitude());
 
 
-                if (lastLocation != null)
+                if (lastLocation != null) {
                     mGoogleApi.updateLocation(lastLocation);
+                    fragmentMapa.moveToLocation(lastLocation.getLatitude(), lastLocation.getLongitude());
+                }
 
             } else {
                 //Permiso denegado:
@@ -363,7 +364,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_sin_resolver) {
 
             Bundle bundle = new Bundle();
-            bundle.putInt(DatuBaseKontratua.Objetos_mapa.TIPO_ID, 3);
+            bundle.putInt(DatuBaseKontratua.Objetos_mapa.TIPO_ID, 4);
 
             fragmentLista = new FragmentList();
             fragmentLista.setArguments(bundle);
@@ -376,7 +377,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_historico) {
 
             Bundle bundle = new Bundle();
-            bundle.putInt(DatuBaseKontratua.Objetos_mapa.TIPO_ID, 4);
+            bundle.putInt(DatuBaseKontratua.Objetos_mapa.TIPO_ID, 3);
 
             fragmentLista = new FragmentList();
             fragmentLista.setArguments(bundle);

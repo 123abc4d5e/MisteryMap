@@ -11,13 +11,13 @@
             android:icon="@drawable/ic_ghost"
             android:title="Fantasmas" />
         <item
-            android:id="@+id/nav_sin_resolver"
-            android:icon="@drawable/ic_question"
-            android:title="Sin Resolver" />
-        <item
             android:id="@+id/nav_historico"
             android:icon="@drawable/ic_universidad"
             android:title="Historico" />
+        <item
+            android:id="@+id/nav_sin_resolver"
+            android:icon="@drawable/ic_question"
+            android:title="Sin Resolver" />
     </group>
 
     <item android:title="Communicate">

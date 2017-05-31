@@ -21,6 +21,7 @@ import com.marluki.misterymap.R;
 import com.marluki.misterymap.provider.DatuBaseKontratua;
 
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by charl on 19/05/2017.
@@ -72,6 +73,8 @@ public class InsertActivity extends AppCompatActivity {
                 int year = current.get(Calendar.YEAR);
                 int month = current.get(Calendar.MONTH);
                 final int day = current.get(Calendar.DAY_OF_MONTH);
+                Calendar cal = Calendar.getInstance();
+                cal.set(0,0,1);;
 
                 DatePickerDialog datePickerDialog;
                 datePickerDialog = new DatePickerDialog(InsertActivity.this, new DatePickerDialog.OnDateSetListener() {
@@ -82,6 +85,8 @@ public class InsertActivity extends AppCompatActivity {
                     }
                 }, year, month, day);
                 datePickerDialog.setTitle("Elige una fecha...");
+                datePickerDialog.getDatePicker().setMinDate(cal.getTimeInMillis());
+                datePickerDialog.getDatePicker().setMaxDate(new Date().getTime());
                 datePickerDialog.show();
             }
         });

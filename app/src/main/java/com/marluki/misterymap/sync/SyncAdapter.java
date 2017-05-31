@@ -26,12 +26,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.gson.Gson;
+import com.marluki.misterymap.R;
 import com.marluki.misterymap.google.App;
 import com.marluki.misterymap.model.Comentario;
 import com.marluki.misterymap.model.Fantasma;
@@ -70,7 +72,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
 
     private static final String TAG = "SyncAdapter";
 
-    private static boolean x = false;
+    private static boolean x = false, y = false;
     private static boolean isUser = false;
     private static String token;
     private static GoogleSignInAccount account;
@@ -78,9 +80,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
     private ContentResolver resolver;
     private GoogleApiClient mGoogleApiClient;
     private Gson gson = new Gson();
+    private Context context;
 
     public SyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
+        this.context = context;
         resolver = context.getContentResolver();
         mGoogleApiClient = App.getmInstance().getmGoogleApiClient();
     }
@@ -122,13 +126,34 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
         }
     }
 
+    private void initGoogle(Context context) {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestIdToken(getContext().getResources().getString(R.string.client_id))
+                .build();
+        final GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(context)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn
+                (mGoogleApiClient);;
+        opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+            @Override
+            public void onResult(GoogleSignInResult googleSignInResult) {
+                Log.d(TAG, "got result");
+                handleSignInResult(googleSignInResult);
+                if (googleSignInResult.isSuccess())
+                    App.getmInstance().setmGoogleApiClient(mGoogleApiClient);
+            }
+        });
+    }
+
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
         Log.d(TAG, "onPerformSync()");
         if (mGoogleApiClient == null || !mGoogleApiClient.isConnected()) {
-            mGoogleApiClient = App.getmInstance().getmGoogleApiClient();
-            initGoogleApiClient(mGoogleApiClient);
+            initGoogle(context);
             if (!mGoogleApiClient.isConnected())
                 mGoogleApiClient.connect();
         }
@@ -164,6 +189,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
     private void doSyncLocal(final SyncResult syncResult) {
         String[] urls = Cons.GET_URLS;
         for (int i = 0; i < urls.length; i++) {
+
             Log.i(TAG, "Iniciando peticion GET a " + urls[i]);
 
             VolleySingleton.getInstance(getContext()).addToRequestQueue(
@@ -185,6 +211,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
                             }
                     )
             );
+            if(i == 2) {
+                while(!y) {
+
+                }
+            }
         }
     }
 
@@ -211,6 +242,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
         JSONArray objetos = null;
         Uri uri = null;
         String id;
+        String seleccion = null;
+        String[] seleccionArgs = null;
 
         // Lista para recolección de operaciones pendientes
         ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
@@ -220,6 +253,19 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        if (tabla.equals(Cons.TABLA_OBJETO_MAPA) ||
+                tabla.equals(Cons.TABLA_COMENTARIO) ||
+                tabla.equals(Cons.TABLA_PSICOFONIA) ||
+                tabla.equals(Cons.TABLA_FOTO)) {
+            seleccion = DatuBaseKontratua.Objetos_mapa.PENDIENTE_ACTUALIZACION + "=? AND (" +
+                    DatuBaseKontratua.Objetos_mapa.PENDIENTE_ELIMINACION + "=? AND " +
+                    DatuBaseKontratua.Objetos_mapa.PENDIENTE_INSERCION + "=?)";
+            seleccionArgs = new String[]{"0","0","0"};
+        } else {
+            seleccion = null;
+            seleccionArgs = null;
+        }
+
 
         switch (tabla) {
             case Cons.TABLA_OBJETO_MAPA:
@@ -234,7 +280,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
 
                 // SQLite databasean dauden datuekin konparatzen
                 uri = DatuBaseKontratua.Objetos_mapa.URI_CONTENT;
-                Cursor c = resolver.query(uri, null, null, null, null);
+                Cursor c = resolver.query(uri, null, seleccion, seleccionArgs, null);
                 assert c != null;
 
                 Log.i(TAG, "Se encontraron " + c.getCount() + " registros locales!");
@@ -301,7 +347,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
                             .build());
                     syncResult.stats.numInserts++;
                 }
-
+                y = true;
                 break;
             case Cons.TABLA_OVNI:
                 // Gson erabiliz parseatzen
@@ -553,7 +599,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
 
                 // SQLite databasean dauden datuekin konparatzen
                 uri = DatuBaseKontratua.Comentarios.URI_CONTENT;
-                Cursor c5 = resolver.query(uri, null, null, null, null);
+                Cursor c5 = resolver.query(uri, null, seleccion, seleccionArgs, null);
                 assert c5 != null;
 
                 Log.i(TAG, "Se encontraron " + c5.getCount() + " registros locales!");
@@ -625,7 +671,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
 
                 // SQLite databasean dauden datuekin konparatzen
                 uri = DatuBaseKontratua.Fotos.URI_CONTENT;
-                Cursor c6 = resolver.query(uri, null, null, null, null);
+                Cursor c6 = resolver.query(uri, null, seleccion, seleccionArgs, null);
                 assert c6 != null;
 
                 Log.i(TAG, "Se encontraron " + c6.getCount() + " registros locales!");
@@ -694,7 +740,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter implements GoogleAp
 
                 // SQLite databasean dauden datuekin konparatzen
                 uri = DatuBaseKontratua.Psicofonias.URI_CONTENT;
-                Cursor c7 = resolver.query(uri, null, null, null, null);
+                Cursor c7 = resolver.query(uri, null, seleccion, seleccionArgs, null);
                 assert c7 != null;
 
                 Log.i(TAG, "Se encontraron " + c7.getCount() + " registros locales!");

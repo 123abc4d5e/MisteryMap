@@ -23,11 +23,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import io.github.rockerhieu.emojicon.EmojiconEditText;
+
 
 public class ComentarioFragment extends Fragment {
 
     private OnComentInsertListener mListener;
-    private TextView txtComentario;
+    private EmojiconEditText txtComentario;
     private FloatingActionButton meterBtn;
     private String textoComentario, id, objeto_id;
     private String fecha;
@@ -58,7 +60,7 @@ public class ComentarioFragment extends Fragment {
         objeto_id = getArguments().getString(DatuBaseKontratua.Comentarios.OBJETO_ID);
 
         meterBtn = (FloatingActionButton) view.findViewById(R.id.comentButton);
-        txtComentario = (EditText) view.findViewById(R.id.comentarioTextoMeter);
+        txtComentario = (EmojiconEditText) view.findViewById(R.id.comentarioTextoMeter);
 //        if(TextUtils.isEmpty(txtComentario.getText())) {
 //            meterBtn.hide();
 //        }

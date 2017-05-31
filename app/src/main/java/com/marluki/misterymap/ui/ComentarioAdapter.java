@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
+import io.github.rockerhieu.emojicon.EmojiconTextView;
+
 /**
  * Created by lu_lu_000 on 25/05/2017.
  */
@@ -52,7 +54,7 @@ public class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.Li
 
         private TextView user;
         private TextView fecha;
-        private TextView comentario;
+        private EmojiconTextView comentario;
         private NetworkImageView foto;
         private ImageLoader imageLoader;
 
@@ -65,7 +67,7 @@ public class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.Li
             user=(TextView)itemView.findViewById(R.id.txtUserComentario);
             foto=(NetworkImageView) itemView.findViewById(R.id.imageUserComent);
             fecha=(TextView)itemView.findViewById(R.id.txtFechaComent);
-            comentario=(TextView)itemView.findViewById(R.id.txtComent);
+            comentario=(EmojiconTextView) itemView.findViewById(R.id.txtComent);
         }
 
         public void bindComentario(final ComentarioViewModel comentarioViewModel,final int position) {

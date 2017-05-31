@@ -80,12 +80,12 @@ public class FragmentList extends Fragment {
         }
 
 
-        adapter = new ObjetosAdapter(ObjetoMapaArrayList);
+        adapter = new ObjetosAdapter(getContext(), ObjetoMapaArrayList);
         recyclerView = (RecyclerView) v.findViewById(R.id.objetosRecyclerView);
         recyclerView.setAdapter(adapter);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+        //recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         return v;

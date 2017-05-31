@@ -16,7 +16,7 @@
         android:text="@string/nuevo_comentario"
         android:gravity="center"/>
 
-    <EditText
+    <io.github.rockerhieu.emojicon.EmojiconEditText
         android:id="@+id/comentarioTextoMeter"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -24,7 +24,6 @@
         android:layout_marginEnd="10sp"
         android:layout_marginStart="10sp"
         android:layout_marginBottom="32sp"
-        android:gravity="top|left"
         android:inputType="textMultiLine"
         android:layout_below="@id/nueviComentario"/>
 

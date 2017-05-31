@@ -1,5 +1,9 @@
 package com.marluki.misterymap.ui;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.NetworkImageView;
 import com.marluki.misterymap.R;
 import com.marluki.misterymap.model.ObjetoMapa2;
 
@@ -19,9 +24,11 @@ import java.util.ArrayList;
 public class ObjetosAdapter extends RecyclerView.Adapter<ObjetosAdapter.ListaViewHolder> {
 
     private ArrayList<ObjetoMapa2> objetos;
+    private Context context;
 
-    public ObjetosAdapter(ArrayList<ObjetoMapa2> objetos) {
+    public ObjetosAdapter(Context context, ArrayList<ObjetoMapa2> objetos) {
         this.objetos = objetos;
+        this.context = context;
     }
 
 
@@ -48,21 +55,38 @@ public class ObjetosAdapter extends RecyclerView.Adapter<ObjetosAdapter.ListaVie
         private TextView user;
         private TextView fecha;
         private TextView comentario;
-        private ImageView foto;
+        private NetworkImageView foto;
 
         public ListaViewHolder(View itemView) {
             super(itemView);
 
             user = (TextView) itemView.findViewById(R.id.txtUserComentario);
-            foto = (ImageView) itemView.findViewById(R.id.imageUserComent);
+            foto = (NetworkImageView) itemView.findViewById(R.id.imageUserComent);
             fecha = (TextView) itemView.findViewById(R.id.txtFechaComent);
             comentario = (TextView) itemView.findViewById(R.id.txtComent);
+            comentario.setTextSize(24);
         }
 
         public void bindObjeto(final ObjetoMapa2 objeto, final int position) {
-            user.setText(objeto.getNombre_objeto());
-            fecha.setText(objeto.getLatitud() + " ,  " + objeto.getLongitud());
-            comentario.setText(objeto.getDetalles());
+            user.setText(objeto.getCiudad() + ", " + objeto.getPais());
+            fecha.setText("LatLong: " + objeto.getLatitud() + " ,  " + objeto.getLongitud());
+            comentario.setText(objeto.getNombre_objeto());
+            int id =0;
+            switch (objeto.getTipo_id()){
+                case 1:
+                    id = R.drawable.ic_alien;
+                    break;
+                case 2:
+                    id = R.drawable.ic_ghost;
+                    break;
+                case 3:
+                    id = R.drawable.ic_universidad;
+                    break;
+                case 4:
+                    id = R.drawable.ic_question;
+                    break;
+            }
+            foto.setDefaultImageResId(id);
         }
 
     }
